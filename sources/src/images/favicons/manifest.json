@@ -1,0 +1,14 @@
+{
+  "name": "Swipe Swap - Defi",
+  "short_name": "Swipe Swap",
+  "description": "The Swipe Swap is a decentralized finance application that enables SXP to be collateralized in the network and fully decentralized protocol for automated liquidity.",
+  "dir": "auto",
+  "lang": "en-US",
+  "display": "standalone",
+  "orientation": "any",
+  "start_url": "/",
+  "background_color": "#fff",
+  "theme_color": "#fff",
+  "icons": [
+  ]
+}

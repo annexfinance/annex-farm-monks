@@ -1,0 +1,47 @@
+extends base/_layout
+block head
+    title Swipe Swap Farm
+block headerClass
+    - var activeItem = 'farm'
+block mainClass
+    - var mainClass = 'main--flex main--biege'
+block page
+    div#farm.farm
+        .container
+            .swap-toggle
+                label.swap-toggle__btn
+                    input(type="radio" name="swap-toggle")
+                    span.swap-toggle__btn-label Ethereum
+                label.swap-toggle__btn
+                    input(type="radio" name="swap-toggle")
+                    span.swap-toggle__btn-label Binance
+            .farm-table-wrap
+                table.farm-table
+                    thead
+                        tr
+                            th Farms
+                            th Yield (per $1,000)
+                            th.farm-table-header.farm-table-header-apy APY
+                            th.farm-table-header.farm-table-header-liquidity Liquidity
+                            th.farm-table-header.farm-table-header-staked Staked
+                            th Earned
+                            th.farm-actions &nbsp;
+                    tbody#farm-table-body
+                        tr
+                            td(colspan=7)#loading
+                                .farm-loading
+                                    .loading
+                                        div
+                                        div 
+                                        div 
+                                        div 
+                        tr
+                            td(colspan=7 style="display: none")#no-pools
+                                .farm-no-pools There is no pools
+                                    
+
+block footer
+
+        block scripts
+            script(src="js/farm.js")
+            script(src="js/bsc.hook.js")

@@ -1,0 +1,88 @@
+extends base/_layout
+block mainClass
+    - var mainClass = 'main--home'
+block page
+    section.section.hero
+        .container
+            .hero__text
+                h1 Decentralized Trading&nbsp;Protocol
+                p Swipe Network enables a cross-chain automated market maker protocol on Binance Smart Chain & Ethereum.
+            .indicators
+                .indicators__item#sxp_price SXP Price
+                    span
+                .indicators__item#sxp_volume All Time Volume
+                    span 
+                .indicators__item#sxp_fee All Time Fees
+                    span 
+                .indicators__item#sxp_volume24 Total Liquidity
+                    span
+
+    section.section.system-descr
+        .container
+            .system-descr__row
+                .system-descr__text
+                    .title Protocol
+                    h4 Automated Market Maker Built on Binance Smart Chain & Ethereum
+                    p Swipe Network users can make trades on either blockchain by switching a simple toggle in the dApp. Trades are all processed on-chain and are fully decentralized with Swipe.
+                .system-descr__img.system-descr__img--01
+                    img(src="images/sys-descr-img-1.svg", alt="")
+            .system-descr__row.system-descr__row--reverse
+                .system-descr__img.system-descr__img--02
+                    img(src="images/sys-descr-img-2.svg", alt="")
+                .system-descr__text
+                    .title Governance
+                    h4 SXP holders can vote on the protocol’s improvement and changes
+                    p SXP holders can vote on the protocol’s improvement and changes through Swipe Governance directly on&#8209;chain. SXP is Swipe Network’s only governance token.
+
+    section.section.farm-pools
+        .container
+            .community__title
+                h2 Swipe Earn
+                p Swipe Swap Liquidity Providers for supported pairs will receive BOTH trading fees and SXP farming rates.
+            .system-descr__row
+                //- .chain
+                //-     .system-descr__text
+                //-         h4 Swipe Earn
+                //-         p Swipe Swap Liquidity Providers for supported pairs will receive BOTH trading fees and SXP farming rates.
+                //-         .chain-selector
+                //-             .chain-name Ethereum
+                //-             .selector.bsc-chooser
+                //-                 .selector-handler
+                //-                     img(src="images/bnb.svg", alt="BSC")
+                //-             .chain-name.selected Binance
+                //-     .pools.binance-pools
+                //-     button.view-more View more...
+                .chain
+                    .system-descr__text
+                        .chain-selector
+                            .chain-name.selected.eth Ethereum
+                            .selector.eth-chooser
+                                .selector-handler
+                                    img(src="images/eth3.svg", alt="ETH")
+                            .chain-name.bsc Binance
+                    .pools#pools-table
+                    button.view-more View more...
+
+    section.section.community
+        .container
+            .community__title
+                h2 Swipe’s Global Community
+                p Connect with other Swipe Community members throughout the world on various social media platforms.
+            .community__items
+                a(href="https://twitter.com/Swipe").community__item
+                    .community__item-inner
+                        .icon-wrap.icon-wrap--twitter
+                            +icon('twitter')
+                        p Twitter
+                a(href="https://t.me/SwipeWallet").community__item
+                    .community__item-inner
+                        .icon-wrap.icon-wrap--telegram
+                            +icon('telegram')
+                        p Telegram
+                a(href="https://www.facebook.com/Swipe").community__item
+                    .community__item-inner
+                        .icon-wrap.icon-wrap--facebook
+                            +icon('facebook')
+                        p Facebook
+block scripts
+    script(src="js/info.js")

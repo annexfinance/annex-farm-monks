@@ -1,0 +1,63 @@
+extends base/_layout
+block head
+    title Token
+block headerClass
+    - var activeItem = 'sxp'
+block mainClass
+    - var mainClass = 'main--home'
+block page
+    section.section.token
+        .container
+            h5.token__pretitle SXP
+            .token__title
+                h1 Swipe Token#[br]A Decentralized Digital Currency
+                img(src="images/sxp-shadow.svg", alt="")
+            .token-about
+                h5 About SXP
+                p Swipe Network enables a cross-chain automated market maker protocol on&nbsp;Binance&nbsp;Smart&nbsp;Chain & Ethereum.
+                .addresses
+                    .addresses__item
+                        span.title ETH Contract Address
+                        a.address(target="_blank" href="https://etherscan.io/address/0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9") 0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9
+                    .addresses__item
+                        span.title BSC Contract Address
+                        a.address(target="_blank" href="https://bscscan.com/address/0x47BEAd2563dCBf3bF2c9407fEa4dC236fAbA485A") 0x47BEAd2563dCBf3bF2c9407fEa4dC236fAbA485A
+            .token-features
+                h4 SXP Utility Features
+                .token-features__items
+                    a(href="#").features-item
+                        .features-item__icon
+                            img(src="images/feature-1.png", alt="" style="width:41px")
+                        h6 Network Fees
+                    a(href="#").features-item
+                        .features-item__icon
+                            img(src="images/feature-2.png", alt="" style="width:43px")
+                        h6 Payments
+                    a(href="#").features-item
+                        .features-item__icon
+                            img(src="images/feature-3.png", alt="" style="width:45px")
+                        h6 Governance
+            .our-markets
+                h4 Our Markets
+                .our-markets__logos
+                    .our-markets__logo
+                        img(src="images/binance_logo.svg", alt="")
+                    .our-markets__logo
+                        img(src="images/bittrex_logo.svg", alt="")
+                    .our-markets__logo
+                        img(src="images/bithumb_logo.png", alt="" style="width:167px")
+                    .our-markets__logo
+                        img(src="images/kucoin_logo.png", alt="" style="width:153px")
+                    .our-markets__logo
+                        img(src="images/upbit_logo.svg", alt="")
+                //- .our-markets__logos(style="display:none")
+                //-     .our-markets__logo
+                //-         img(src="images/binance_logo.svg", alt="")
+                //-     .our-markets__logo
+                //-         img(src="images/bittrex_logo.svg", alt="")
+                //-     .our-markets__logo
+                //-         img(src="images/bithumb_logo.png", alt="" style="width:167px")
+                //-     .our-markets__logo
+                //-         img(src="images/kucoin_logo.png", alt="" style="width:153px")
+                .our-markets__see-more.js-see-more
+                    a(href="https://coinmarketcap.com/currencies/swipe/markets/" target="_blank").btn.btn-gray See more markets
