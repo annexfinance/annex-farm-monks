@@ -4,10 +4,10 @@ doctype html
 html(lang="en")
     head
         block head
-            title Swipe Swap - DeFi
+            title Annex Farm
         
         meta(charset="utf-8")
-        meta(name='keywords' content='Swipe Swap')
+        meta(name='keywords' content='Annex Farm')
 
         meta(http-equiv="X-UA-Compatible" content="IE=edge")
         meta(name="viewport" content="width=device-width, initial-scale=1.0")
@@ -29,37 +29,35 @@ html(lang="en")
         link(rel='icon' type='image/png' sizes='16x16' href='images/favicons/favicon-16x16.png')
 
         link(rel="manifest" href="images/favicons/manifest.json")
-        link(rel='canonical' href='https://swipe.org')
+        link(rel='canonical' href='https://annex.finance')
 
         meta(name="msapplication-TileColor" content="#ffffff")
         meta(name="msapplication-TileImage" content="images/favicons/mstile-144x144.png")
         meta(name="msapplication-config" content="images/favicons/browserconfig.xml")
         meta(name="theme-color" content="#ffffff")
-        meta(name='apple-mobile-web-app-title' content='Swipe Swap')
-        meta(name='application-name' content='Swipe Swap')
-        meta(name='thumbnail' content='images/feature-meta.png')
-        meta(name='title' content='Swipe Swap - DeFi')
-        meta(name='description' content='The Swipe Network enables Swipe Swap a cross-chain automated market maker (AMM) protocol that operates on Binance Smart Chain and Ethereum while powered by the SXP token.')
+        meta(name='apple-mobile-web-app-title' content='Annex Farm')
+        meta(name='application-name' content='Annex Farm')
+        meta(name='thumbnail' content='images/feature-meta.jpg')
+        meta(name='title' content='Annex Farm')
+        meta(name='description' content='Money Markets. A Decentralized Marketplace for Lenders and Borrowers with Borderless Stablecoins.')
 
-        meta(property='og:title' content='Swipe Swap - DeFi')
-        meta(property='og:image' content='images/feature-meta.png')
+        meta(property='og:title' content='Annex Farm')
+        meta(property='og:image' content='images/feature-meta.jpg')
         meta(property='og:locale' content='en_US')
         meta(property='og:type' content='website')
-        meta(property='og:description' content='The Swipe Network enables Swipe Swap a cross-chain automated market maker (AMM) protocol that operates on Binance Smart Chain and Ethereum while powered by the SXP token.')
-        meta(property='og:url' content='https://swipe.org')
+        meta(property='og:description' content='Money Markets. A Decentralized Marketplace for Lenders and Borrowers with Borderless Stablecoins.')
+        meta(property='og:url' content='https://annex.finance')
         meta(property='og:site_name' content='Stake')
         meta(property='twitter:card' content='summary_large_image')
-        meta(property='twitter:title' content='Swipe Swap - DeFi')
-        meta(property='twitter:description' content='The Swipe Network enables Swipe Swap a cross-chain automated market maker (AMM) protocol that operates on Binance Smart Chain and Ethereum while powered by the SXP token.')
-        meta(property='twitter:image' content='images/feature-meta.png')
-        meta(property='twitter:site' content='@SwipeWallet')
-        meta(property='twitter:creator' content='@SwipeWallet')
-        meta(property='twitter:url' content='https://swipe.org')
+        meta(property='twitter:title' content='Annex Farm')
+        meta(property='twitter:description' content='Money Markets. A Decentralized Marketplace for Lenders and Borrowers with Borderless Stablecoins.')
+        meta(property='twitter:image' content='images/feature-meta.jpg')
+        meta(property='twitter:site' content='@AnnexFinance')
+        meta(property='twitter:creator' content='@AnnexFinance')
+        meta(property='twitter:url' content='https://annex.finance')
 
         meta(name='google-site-verification' content='lYDzVz0SnYTgGwn7I3ocRDO5-Yhtk9lFujCFJUljqOo')
         meta(name='google-site-verification' content='YjfX8FfaC3MEVi6nAG6ApFJJlZwtz1nNOjGBKRgaVyE')
-        meta(name='apple-itunes-app' content='app-id=1476726454')
-        meta(name='google-play-app' content='app-id=com.swipe.wallet')
         
         link(rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css")
         link(rel="stylesheet" href="css/main.css")
@@ -70,7 +68,7 @@ html(lang="en")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.min.js")
         include ../blocks/_wallet-connect
 
-    body
+    body(class="dark-mode")
         .layout
             block header
                 include ../blocks/_header

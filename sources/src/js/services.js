@@ -156,8 +156,8 @@ window.services = {
       //   $('a[href="farm.html"]').show();
       // }
       if (window.isETH === undefined) return;
-      $(`.swap-toggle__btn:nth-child(${isETH ? 2 : 1}) input`).removeAttr('checked');
-      $(`.swap-toggle__btn:nth-child(${isETH ? 1 : 2}) input`).attr('checked', 'checked');
+      // $(`.swap-toggle__btn:nth-child(${isETH ? 2 : 1}) input`).removeAttr('checked');
+      // $(`.swap-toggle__btn:nth-child(${isETH ? 1 : 2}) input`).attr('checked', 'checked');
       const base = $(".base-token");
       base.find(".ticker").text(BASE_SYMBOL);
       base.find(".descr").text(BASE_ASSET);

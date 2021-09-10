@@ -250,7 +250,7 @@ function farmTableRender() {
           ? "No rewards"
           : "Harvest Now";
 
-      const addLiquidityBtn = `<a class="btn btn-lbiege" href="add-liquidity.html?type=add&inputCurrency=${pair.liquidityPair.token0.id}&outputCurrency=${pair.liquidityPair.token1.id}">Add Liquidity</a>`;
+      const addLiquidityBtn = `<a class="btn" href="add-liquidity.html?type=add&inputCurrency=${pair.liquidityPair.token0.id}&outputCurrency=${pair.liquidityPair.token1.id}">Add Liquidity</a>`;
       let stakeBtn = "";
       let unStakeBtn = "";
 
@@ -261,7 +261,7 @@ function farmTableRender() {
       ) {
         stakeBtn = `<a class="btn btn-link btn-approve-staking" href="#" data-address="${pair.pair}" data-name="${pairSymbol}">Approve Staking</a>`;
       } else {
-        stakeBtn = `<a class="btn btn-link js-popup-open"
+        stakeBtn = `<a class="btn js-popup-open"
                         href="#stake_asset"
                         data-id="${pair.id}"
                         data-address="${pair.pair}"
@@ -274,7 +274,7 @@ function farmTableRender() {
       if (
         !new BigNumber(users ? (user?.amount || 0) / 1e18 : "0.00").isZero()
       ) {
-        unStakeBtn = `<a class="btn btn-link js-popup-open"
+        unStakeBtn = `<a class="btn js-popup-open"
                           href="#stake_asset"
                           data-id="${pair.id}"
                           data-address="${pair.pair}"
@@ -288,7 +288,7 @@ function farmTableRender() {
                           data-title="Withdraw">UnStake</a>`;
       }
 
-      const existingTR = $("#farm-table-body").find(`#pair-${pairSymbol}`);
+      const existingTR = $(".farm-list-items").find(`#pair-${pairSymbol}`);
       if (!existingTR.length) {
         let harvestBtn = "";
         if (
@@ -333,98 +333,99 @@ function farmTableRender() {
         // render tr to tbody
         $("#loading").hide();
         $("#no-pools").hide();
-        $("#farm-table-body").append(`
-          <tr id="pair-${pairSymbol}" class="farm-item">
-            <td>
-              <div class="cell-title">Farm : </div>
-              <div class="cell-farms">
-                <div class="cell-farms__icons">
-                  <div class="first-icon">
-                    <img src="${firstIconUrl}" alt="${
-          pair.liquidityPair.token0.symbol
-        }">
-                  </div>
-                  <div class="second-icon">
-                    <img src="${secondIconUrl}" alt="${
-          pair.liquidityPair.token1.symbol
-        }">
-                  </div>
+        $(".farm-list-items").append(`
+          <div class="farm-list-items-item" id="pair-${pairSymbol}">
+            <div class="farm-list-items-item-title">
+              <div class="farm-list-items-item-title__icons">
+                <div class="first-icon">
+                  <img src="${firstIconUrl}" alt="${
+                    pair.liquidityPair.token0.symbol
+                  }">
                 </div>
-                <div class="cell-farms__text">
-                  <p>${pairName}</p>
-                  <div class="descr">${pairSymbol}</div>
+                <div class="second-icon">
+                  <img src="${secondIconUrl}" alt="${
+                    pair.liquidityPair.token1.symbol
+                  }">
                 </div>
               </div>
-            </td>
-            <td>
-              <div class="cell-title">Yield(per $1,000) : </div>
-              <div class="cell-yield">
+              <div class="farm-list-items-item-title__text">
+                <p>${pairName}</p>
+                <div class="descr">${pairSymbol}</div>
+              </div>
+            </div>
+            <div class="farm-list-items-item-content">
+              <div class="farm-list-items-item-content__cell">Yield (per $1,000) : </div>
+              <div class="farm-list-items-item-content__cell">
                 <div class="cell-yield__icon">
-                  <img src="images/sxp.svg" alt="sxp">
+                  <img src="images/ann.svg" alt="ANN">
                 </div>
                 <div class="cell-yield__text">
-                  <p>${formatNumber(pair.rewardPerThousand, 2)} SXP/Day</p>
+                  <p>${formatNumber(pair.rewardPerThousand, 2)} ANN/Day</p>
                   <div class="descr">${pair.allocPoint} allocPoint</div>
                 </div>
               </div>
-            </td>
-            <td class="${
-              pair.roiPerYear * 100 >= 0 ? "td-apy-raised" : "td-apy-down"
-            }">
-              <div class="cell-title">APY : </div>
-              <div class="td-apy-raised--value">
-                <span>⬆ ${formatNumber(pair.roiPerYear * 100, 2)}%</span>
-              </div>
-            </td>
-            <td class="farm-liquidity">
-              <div class="cell-title">Liquidity : </div>
-              <div class="farm-liquidity-value" title="${formatNumber(
-                pair.liquidityPair.reserveUSD,
-                2,
-                "en",
-                "currency",
-                "USD"
-              )}">
-                ${formatNumber(
-                  pair.liquidityPair.reserveUSD,
-                  2,
-                  "en",
-                  "currency",
-                  "USD"
-                )}
-              </div>
-            </td>
-            <td>
-              <div class="cell-title">Staked : </div>
-              <div class="cell-staked">
-                <p id="pair-${pairSymbol}-staked-amount">
-                  ${formatNumber(stakedAmount, 2, "en", "currency", "USD")}
-                </p>
-                <div class="descr" id="pair-${pairSymbol}-staked-desc">
-                  ${formatNumber(token0Amount.toNumber(), token0.decimals)} ${
-          token0.symbol
-        } / ${formatNumber(token1Amount.toNumber(), token1.decimals)} ${
-          token1.symbol
-        }
+              <div class="farm-list-items-item-content__cell">
+                <div>
+                  <div class="cell-apy-title">APY</div>
+                  <div class="cell-apy"><span>⬆</span> ${formatNumber(pair.roiPerYear * 100, 2)}%</div>
                 </div>
               </div>
-            </td>
-            <td>
-              <div class="cell-title">Earned : </div>
-              <div class="cell-earned">
+              <div class="farm-list-items-item-content__cell">
+                <div class="farm-list-items-item-content__cell-wrapper-right">
+                  <div class="cell-apy-title">Liquidity</div>
+                  <div class="cell-apy">
+                    ${formatNumber(
+                      pair.liquidityPair.reserveUSD,
+                      2,
+                      "en",
+                      "currency",
+                      "USD"
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div class="farm-list-items-item-content__cell">
+                <div>
+                  <div class="cell-apy-title">Staked</div>
+                  <p class="cell-apy" id="pair-${pairSymbol}-staked-amount">
+                    ${formatNumber(stakedAmount, 2, "en", "currency", "USD")}
+                  </p>
+                </div>
+              </div>
+              <div class="farm-list-items-item-content__cell">
+                <div class="farm-list-items-item-content__cell-wrapper-right">
+                  <div class="staked-assets" id="pair-${pairSymbol}-staked-desc">
+                    ${formatNumber(token0Amount.toNumber(), token0.decimals)} ${
+                      token0.symbol
+                    } / ${formatNumber(token1Amount.toNumber(), token1.decimals)} ${
+                      token1.symbol
+                    }
+                  </div>
+                </div>
+              </div>
+              <div class="farm-list-items-item-content__cell">Earned</div>
+              <div class="farm-list-items-item-content__cell">
                 <div class="cell-earned__icon">
-                  <img src="images/sxp.svg">
+                  <img src="images/ann.svg" alt="ANN">
                 </div>
                 <div class="cell-earned__text">
                   <p id="pair-${pairSymbol}-earned-title">${formatNumber(
-          reward
-        )} SXP</p>
+                    reward
+                  )} ANN</p>
                   ${harvestBtn}
                 </div>
               </div>
-            </td>
-            ${actionTD}
-          </tr>
+            </div>
+            <div class="farm-list-items-item-actions">
+              <div class="farm-list-items-item-actions__wrapper" id="pair-${pairSymbol}-actions">
+                ${addLiquidityBtn}
+                <div class="farm-list-items-item-actions__wrapper-buttons">
+                  ${stakeBtn}
+                  ${unStakeBtn}
+                </div>
+              </div>
+            </div>
+          </div>
         `);
       } else {
         // Update the staked values

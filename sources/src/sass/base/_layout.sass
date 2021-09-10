@@ -252,19 +252,20 @@ input[type=text], input[type=search], input[type=email], input[type=password], i
     justify-content: center
     align-items: center
     flex-shrink: 0
-    height: 40px
-    background-color: $orange
+    height: 50px
+    background-color: #ff9800
     font-family: $mukb
-    font-size: 14px
+    font-size: 24px
     line-height: 1
-    color: #fff
-    border-radius: 8px
+    color: #000
+    border-radius: 50px
     transition: all .3s ease
     outline: none
     user-select: none
     cursor: pointer
     &:hover
-        background-color: #e55b13
+        background-color: #fff
+        color: #ff9800
     &-gradient
         background: linear-gradient(236.25deg, #FF9803 0%, #FF4920 86.7%)
         background-size: 100% 100%
@@ -287,11 +288,16 @@ input[type=text], input[type=search], input[type=email], input[type=password], i
             background-color: #868686
             color: #f8f8f8
     &-biege
-        background-color: #FFE6D5
-        color: $orange
+        background-color: #525150
+        color: #fff
+        font-weight: normal
+        font-size: 16px
+        line-height: 19px
+        height: 42px
+        border-radius: 21px
         &:hover
-            background-color: $orange
-            color: #fff
+            background-color: #525150
+            color: #ff9800
     &-lbiege
         background-color: #FFF8F3
         color: $orange
@@ -306,6 +312,7 @@ input[type=text], input[type=search], input[type=email], input[type=password], i
     &-link
         background: none
         color: $orange
+        font-weight: normal
         &:hover
             background: none
             color: #e55b13
