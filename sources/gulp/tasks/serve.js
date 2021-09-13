@@ -1,7 +1,7 @@
 module.exports = function () {
   $.gulp.task("serve", function () {
     $.gulp
-      .src(["./src/pdf/Whitepaper.pdf", "./src/Swipechain.pdf"])
+      .src(["./src/images/favicons/apple-icon.png"])
       .pipe($.gulp.dest($.path.dest))
       .pipe(
         $.debug({

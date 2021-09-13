@@ -222,9 +222,9 @@ function getPoolsFromBSC() {
   return Promise.all([
     call(MASTERCHEF_CONTRACT.methods.poolLength)(),
     call(MASTERCHEF_CONTRACT.methods.owner)(),
-    call(MASTERCHEF_CONTRACT.methods.swipePerBlock)(),
+    call(MASTERCHEF_CONTRACT.methods.annexPerBlock)(),
     call(MASTERCHEF_CONTRACT.methods.totalAllocPoint)(),
-  ]).then(([poolLength, owner, swipePerBlock, totalAllocPoint]) => {
+  ]).then(([poolLength, owner, annexPerBlock, totalAllocPoint]) => {
     let poolIds = [];
     for (let i = 0; i < poolLength; i += 1) {
       poolIds.push(i);
@@ -245,10 +245,10 @@ function getPoolsFromBSC() {
             allocPoint: info.allocPoint,
             lastRewardBlock: info.lastRewardBlock,
             pair: info.lpToken.toLowerCase(),
-            accSwipePerShare: info.accSwipePerShare,
+            accAnnexPerShare: info.accAnnexPerShare,
             owner: {
               id: owner,
-              swipePerBlock,
+              annexPerBlock,
               totalAllocPoint,
             },
             balance: user.amount,
@@ -795,7 +795,7 @@ function getBalances(address, pairs) {
   });
 }
 
-function getFarmSLPBalance(pools) {
+function getFarmALPBalance(pools) {
   const { CONTRACT_MASTERCHEF_ADDRESS = values[1].CONTRACT_MASTERCHEF_ADDRESS } = window.variables;
 
   const pairTokenContracts = Object.fromEntries(

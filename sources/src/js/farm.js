@@ -69,6 +69,7 @@ function initHook() {
 function initFarm() {
   console.log("initFarm");
   initData(function (pools, contracts) {
+    console.log('POOOOOOOLS : ', pools)
     window.variables.PAIR_TOKEN_CONTRACTS = contracts;
     window.variables.farm.POOLS = pools;
     window.variables.farm.USERS = [];
@@ -108,8 +109,9 @@ function onNetworkChanged() {
 }
 
 function initData(callback) {
+  console.log('values : ', values)
   const {
-    CONTRACT_TOKEN_ADDRESS = values[1].CONTRACT_TOKEN_ADDRESS,
+    CONTRACT_TOKEN_ADDRESS = values[56].CONTRACT_TOKEN_ADDRESS,
   } = window.variables;
   Promise.all([
     getLiquidityPositions(),
@@ -130,7 +132,7 @@ function initData(callback) {
       const pairAddresses = pools.map((pool) => pool.pair).sort();
       const { NETWORK } = window.variables || NETWORK;
 
-      Promise.all([getPairs(pairAddresses), getFarmSLPBalance(pools)])
+      Promise.all([getPairs(pairAddresses), getFarmALPBalance(pools)])
         .then(function ([pairs, { balances, pairTokenContracts }]) {
           const filteredPools = pools
             .filter(
