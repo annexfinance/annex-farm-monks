@@ -9,6 +9,8 @@ let searchKeyward = "";
 
 window.onload = function () {
   console.log("onLoad!");
+  $("#loading").show();
+  $("#no-pools").hide();
   window.events.initHook = initHook;
   window.triggers.onLoad = [...(window.triggers.onLoad || []), "initHook"];
 
@@ -58,13 +60,8 @@ window.onload = function () {
 
   $(document).on("change", "#farm-search", function (e) {
     e.preventDefault();
-    console.log(e.target.value)
     onSearch(e.target.value);
   });
-
-  // if (!window.variables.NETWORK) {
-  //   initFarm();
-  // }
 };
 
 function initHook() {
@@ -673,6 +670,6 @@ function sortData() {
       }
     });
   
-  // $(".farm-list-items-item").remove();
+  $(".farm-list-items-item").remove();
   farmTableRender();
 }
