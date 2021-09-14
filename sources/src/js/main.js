@@ -221,7 +221,7 @@ function popups() {
       const availableAmount = $(this).attr("data-amount");
       $(_id)
         .find(".available-balance-value")
-        .text(`${new BigNumber(availableAmount).toFixed(8)} SLP`);
+        .text(`${new BigNumber(availableAmount).toFixed(8)} ALP`);
       $(_id).find(".js-input-max-balance").attr("data-value", `${availableAmount}`);
       $(_id).find("#current_pool_id").val($(this).attr("data-id"));
       $(_id).find("#current_stake_type").val($(this).attr("data-type"));

@@ -1047,7 +1047,7 @@ function runStake(poolId, amount, name, type = "stake", callback) {
       .send()
       .on("transactionHash", (hash) => {
         services.push({
-          text: `Stake ${Number(amount).toFixed(6)} SLP (${name})`,
+          text: `Stake ${Number(amount).toFixed(6)} ALP (${name})`,
           hash,
         });
         $("#stake_asset .js-confirm-btn").attr("disabled", true);
@@ -1071,7 +1071,7 @@ function runStake(poolId, amount, name, type = "stake", callback) {
       .send()
       .on("transactionHash", (hash) => {
         services.push({
-          text: `Unstake ${Number(amount).toFixed(6)} SLP (${name})`,
+          text: `Unstake ${Number(amount).toFixed(6)} ALP (${name})`,
           hash,
         });
         $("#stake_asset .js-confirm-btn").attr("disabled", true);

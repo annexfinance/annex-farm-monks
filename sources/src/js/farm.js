@@ -3,8 +3,9 @@
 const BSC = 56;
 const NETWORK = 1;
 let pairList = [];
-let sortField = "";
-let sortDirection = "";
+let sortField = "apy";
+let sortDirection = "desc";
+let searchKeyward = "";
 
 window.onload = function () {
   console.log("onLoad!");
@@ -42,19 +43,23 @@ window.onload = function () {
     approveStaking(address, name);
   });
 
-  $(document).on("click", ".farm-table-header-apy", function (e) {
+  $(document).on("change", "#farm-sort", function (e) {
     e.preventDefault();
-    onSort("apy");
+    if (e.target.value === 'apy') {
+      onSort("apy");
+    } else if (e.target.value === 'allocpoint') {
+      onSort("allocpoint");
+    } else if (e.target.value === 'earned') {
+      onSort("earned");
+    } else {
+      onSort("liquidity");
+    }
   });
 
-  $(document).on("click", ".farm-table-header-liquidity", function (e) {
+  $(document).on("change", "#farm-search", function (e) {
     e.preventDefault();
-    onSort("liquidity");
-  });
-
-  $(document).on("click", ".farm-table-header-staked", function (e) {
-    e.preventDefault();
-    onSort("staked");
+    console.log(e.target.value)
+    onSearch(e.target.value);
   });
 
   if (!window.variables.NETWORK) {
@@ -235,7 +240,6 @@ function farmTableRender() {
     window.variables.TOKEN_LIST[window.variables.NETWORK || NETWORK];
   console.log('assets : ', assets)
   if (pairList.length > 0) {
-    $("#farm-table-body .farm-item").remove();
     pairList.forEach((pair) => {
       const pairName = pair.liquidityPair.token1.name ? `${pair.liquidityPair.token0.name} ${pair.liquidityPair.token1.name}` : pair.liquidityPair.token0.name;
       const pairSymbol = pair.liquidityPair.token1.symbol ? `${pair.liquidityPair.token0.symbol}-${pair.liquidityPair.token1.symbol}` : pair.liquidityPair.token0.symbol;
@@ -571,21 +575,41 @@ function isNumber(value) {
   return typeof value === "number" && isFinite(value);
 }
 
+function onSearch(keyward) {
+  searchKeyward = keyward;
+  console.log(searchKeyward)
+
+  searchData();
+}
+
+function searchData() {
+  pairList = window.variables.farm.POOLS
+    .filter((pair) => {
+      const re = new RegExp(searchKeyward, 'i');
+
+      if (pair.liquidityPair.token0.name.search(re) >= 0 ||
+        pair.liquidityPair.token0.symbol.search(re) >= 0 ||
+        pair.liquidityPair.token1.name && pair.liquidityPair.token1.name.search(re) >= 0 ||
+        pair.liquidityPair.token1.symbol && pair.liquidityPair.token1.symbol.search(re) >= 0
+      ) {
+        return true
+      } else {
+        return false
+      }
+    })
+
+  sortData();
+}
+
 function onSort(field) {
   sortField = field;
-  if ($(`.farm-table-header-${field}`).hasClass("desc")) {
-    sortDirection = "asc";
-  } else {
-    sortDirection = "desc";
-  }
-  $(".farm-table-header").removeClass("asc").removeClass("desc");
-  $(`.farm-table-header-${field}`).addClass(sortDirection);
 
   sortData();
 }
 
 function sortData() {
   const users = window.variables.farm.USERS || [];
+  const allowances = window.variables.farm.ALLOWANCES || [];
   pairList = pairList
     .map((pair) => {
       const user = users.find((u) => u.pool.id === pair.id);
@@ -627,9 +651,30 @@ function sortData() {
             return aStakedAmount.minus(bStakedAmount).toNumber();
           }
           return bStakedAmount.minus(aStakedAmount).toNumber();
+        case "earned":
+          const rewardA =
+            allowances[a.pair] && allowances[a.pair].reward
+              ? new BigNumber(allowances[a.pair].reward)
+              : new BigNumber(0);
+          const rewardB =
+            allowances[b.pair] && allowances[b.pair].reward
+              ? new BigNumber(allowances[b.pair].reward)
+              : new BigNumber(0);
+
+          if (sortDirection === "asc") {
+            return rewardA.minus(rewardB).toNumber();
+          }
+          return rewardB.minus(rewardA).toNumber();
+        case "allocpoint":
+          if (sortDirection === "asc") {
+            return a.allocPoint - b.allocPoint;
+          }
+          return b.allocPoint - a.allocPoint;
         default:
           break;
       }
     });
+  
+  $(".farm-list-items-item").remove();
   farmTableRender();
 }
