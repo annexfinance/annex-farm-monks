@@ -1,4 +1,4 @@
-const TOKEN_LIST = "https://tokens.swipe.org/";
+const TOKEN_LIST = "https://tokens.annex.finance/";
 
 function getAssets() {
   return Promise.all([

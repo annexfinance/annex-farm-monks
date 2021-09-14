@@ -180,7 +180,7 @@ function renderPools(pairs, balances) {
                   <div class="pool-accordion--body-text-item-descr">Your pool share:</div>
                   <div class="pool-accordion--body-text-item-value pool-share-percent">${poolSharePercent}%</div>
                 </div>
-                <a href="https://info.swipe.org/pairs/${pair.id}" target="_blink" class="pool-accordion--body-link-item">
+                <a href="https://info.annex.finance/pairs/${pair.id}" target="_blink" class="pool-accordion--body-link-item">
                   View accrued fees and analytics
                   <span style="font-size: 11px;">↗</span>
                 </a>
