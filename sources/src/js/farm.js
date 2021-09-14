@@ -224,7 +224,6 @@ function initUserData(callback) {
     ACCOUNT && POOLS ? getAllowances(ACCOUNT, POOLS) : Promise.resolve([]),
   ])
     .then(([users, allowances]) => {
-      console.log('^^^^^ ', [users, allowances])
       window.variables.farm.USERS = users;
       window.variables.farm.ALLOWANCES = allowances;
       callback();
@@ -675,6 +674,6 @@ function sortData() {
       }
     });
   
-  $(".farm-list-items-item").remove();
+  // $(".farm-list-items-item").remove();
   farmTableRender();
 }

@@ -309,7 +309,6 @@ async function getLiquidityPositions() {
 }
 
 function getPairs(pairAddresses, ethPrice, annexPrice) {
-  console.log('pairAddresses: ', pairAddresses)
   const { CONTRACT_TOKEN_ADDRESS, CONTRACT_TOKEN_ABI, CONTRACT_ERC20_ABI } = window.variables;
   
   const pairContracts = pairAddresses.map(pairAddress => {
@@ -319,7 +318,6 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
       return [pairAddress, getPairTokenContract(pairAddress)];
     }
   });
-  console.log('pairContracts: ', pairContracts)
 
   return Promise.all(
     pairContracts.map((pairContract) => {
@@ -362,8 +360,11 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
         .then((result) => {
           console.log('result: ', result)
           return result.map(data => {
-            const reserve0 = Array.isArray(data[1]) ? new BigNumber(data[1][0]).div(new BigNumber(10).pow(data[4])).toString(10) : new BigNumber(data[1]).div(new BigNumber(10).pow(data[4])).toString(10);
-            const reserve1 = Array.isArray(data[1]) ? new BigNumber(data[1][1]).div(new BigNumber(10).pow(data[8])).toString(10) : 0;
+            const reserve0 = data[1]._reserve0 ? new BigNumber(data[1]._reserve0).div(new BigNumber(10).pow(data[5])).toString(10) : new BigNumber(data[1]).div(new BigNumber(10).pow(data[5])).toString(10);
+            const reserve1 = data[1]._reserve1 ? new BigNumber(data[1]._reserve1).div(new BigNumber(10).pow(data[9])).toString(10) : 0;
+            console.log('reserve: ', data[1]._reserve0, data[1]._reserve1)
+            console.log('reserve0: ', reserve0)
+            console.log('reserve1: ', reserve1)
             let token0Price = 0;
             if (new BigNumber(reserve1).isZero()) {
               token0Price = 0
@@ -878,7 +879,6 @@ function getAllowances(address, pools) {
           }),
           {}
         );
-        console.log('pairs---- ', pairs)
         resolve(pairs);
       })
       .catch(error => {
