@@ -234,6 +234,7 @@ function initUserData(callback) {
 function farmTableRender() {
   const users = window.variables.farm.USERS || [];
   const allowances = window.variables.farm.ALLOWANCES || [];
+  const { ADD_LIQUIDITY_URL } = window.variables.URLS;
   // $("#farm-table-body .farm-item").remove();
   const assets =
     window.variables.TOKEN_LIST[window.variables.NETWORK || NETWORK];
@@ -265,7 +266,7 @@ function farmTableRender() {
           ? "No rewards"
           : "Harvest Now";
 
-      const addLiquidityBtn = `<a class="btn" href="add-liquidity.html?type=add&inputCurrency=${pair.liquidityPair.token0.id}&outputCurrency=${pair.liquidityPair.token1.id}">Add Liquidity</a>`;
+      const addLiquidityBtn = `<a class="btn" href="${ADD_LIQUIDITY_URL}/${pair.liquidityPair.token0.id}/${pair.liquidityPair.token1.id}" target="_new">Add Liquidity</a>`;
       let stakeBtn = "";
       let unStakeBtn = "";
 
