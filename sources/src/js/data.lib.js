@@ -414,9 +414,6 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
             return pair
           });
         })
-      
-
-      // return { balances, pairTokenContracts };
     })
     .catch(console.log);
 }
