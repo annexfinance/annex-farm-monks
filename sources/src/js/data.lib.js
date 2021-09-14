@@ -1,5 +1,5 @@
 "use strict";
-const NETWORK = 1;
+const NETWORK = 56;
 
 const tokenFields = `{
     id
@@ -80,6 +80,7 @@ function makeGraphQLRequest(
     method,
     data: JSON.stringify(params),
     dataType: "json",
+    contentType: "application/json",
     success: function (response) {
       if (response.data) {
         if (success) {
@@ -88,10 +89,13 @@ function makeGraphQLRequest(
           globalSuccess(response.data);
         }
       } else {
-        globalFailed();
+        console.log(response)
+        globalFailed(response.error);
       }
     },
-    error: failed ? failed : globalFailed,
+    error: function(error) {
+      failed ? failed : globalFailed(error)
+    }
   });
 }
 
@@ -112,12 +116,12 @@ async function getPool(id) {
                             pair
                             allocPoint
                             lastRewardBlock
-                            accSwipePerShare
+                            accAnnexPerShare
                             balance
                             userCount
                             owner {
                                 id
-                                swipePerBlock
+                                annexPerBlock
                                 totalAllocPoint
                             }
                             users(orderBy: amount, orderDirection: desc) {
@@ -177,12 +181,12 @@ async function getPools(url = null) {
                             pair
                             allocPoint
                             lastRewardBlock
-                            accSwipePerShare
+                            accAnnexPerShare
                             balance
                             userCount
                             owner {
                                 id
-                                swipePerBlock
+                                annexPerBlock
                                 totalAllocPoint
                             }
                         }
@@ -262,30 +266,28 @@ function getPoolsFromBSC() {
 }
 
 async function getLiquidityPositions() {
-  const { SWIPE_SWAP_URL } = window.variables.URLS || values[NETWORK].URLS;
+  const { ANNEX_FARM_URL } = window.variables.URLS || values[NETWORK].URLS;
   const { ACCOUNT } = window.variables;
   if (ACCOUNT) {
     return new Promise((resolve, reject) => {
       makeGraphQLRequest(
-        SWIPE_SWAP_URL,
+        ANNEX_FARM_URL,
         {
-          query: `
-                  query(
-                      $first: Int! = 1000,
-                      $user: Bytes!
-                      ) {
-                          liquidityPositions(first: $first, where: { user: $user }) {
-                              id
-                              liquidityTokenBalance
-                              user {
-                                  id
-                              }
-                              pair {
-                                  id
-                              }
-                          }
+          query: `query(
+                    $first: Int! = 1000,
+                    $user: Bytes!
+                  ) {
+                    liquidityPositions(first: $first, where: { user: $user }) {
+                      id
+                      liquidityTokenBalance
+                      user {
+                        id
                       }
-              `,
+                      pair {
+                        id
+                      }
+                    }
+                  }`,
           variables: {
             user: ACCOUNT.toLowerCase(),
           },
@@ -306,50 +308,122 @@ async function getLiquidityPositions() {
   }
 }
 
-function getPairs(pairAddresses, url = null) {
-  const { SWIPE_SWAP_URL } = window.variables.URLS || values[NETWORK].URLS;
-
-  if (!url) {
-    url = SWIPE_SWAP_URL;
-  }
-  return new Promise((resolve, reject) => {
-    makeGraphQLRequest(
-      url,
-      {
-        query: `
-                query(
-                    $first: Int! = 1000
-                    $pairAddresses: [Bytes]!
-                    $orderBy: String! = "trackedReserveETH"
-                    $orderDirection: String! = "desc"
-                ) {
-                    pairs(
-                        first: $first
-                        orderBy: $orderBy
-                        orderDirection: $orderDirection
-                        where: { id_in: $pairAddresses }
-                    ) ${pairFields}
-                }
-            `,
-        variables: {
-          pairAddresses,
-        },
-      },
-      "post",
-      function (data) {
-        return resolve(data.pairs);
-      },
-      function (error) {
-        return reject(error);
-      }
-    );
+function getPairs(pairAddresses, ethPrice, annexPrice) {
+  console.log('pairAddresses: ', pairAddresses)
+  const { CONTRACT_TOKEN_ADDRESS, CONTRACT_TOKEN_ABI, CONTRACT_ERC20_ABI } = window.variables;
+  
+  const pairContracts = pairAddresses.map(pairAddress => {
+    if (toChecksumAddress(pairAddress) === toChecksumAddress(CONTRACT_TOKEN_ADDRESS)) {
+      return [pairAddress, getPairTokenContract(pairAddress, CONTRACT_TOKEN_ABI)];
+    } else {
+      return [pairAddress, getPairTokenContract(pairAddress)];
+    }
   });
+  console.log('pairContracts: ', pairContracts)
+
+  return Promise.all(
+    pairContracts.map((pairContract) => {
+      return Promise.all([
+        Promise.resolve(pairContract[0]),
+        web3 && pairContract[1].methods.token0 ? call(pairContract[1].methods.token0)() : Promise.resolve(pairContract[0]),
+        web3 && pairContract[1].methods.token1 ? call(pairContract[1].methods.token1)() : Promise.resolve(null),
+        web3 && pairContract[1].methods.getReserves ? call(pairContract[1].methods.getReserves)() : Promise.resolve('0'),
+        web3 && pairContract[1].methods.totalSupply ? call(pairContract[1].methods.totalSupply)() : Promise.resolve(null),
+        web3 && pairContract[1].methods.name ? call(pairContract[1].methods.name)() : Promise.resolve(null),
+      ]);
+    })
+  )
+    .then((results) => {
+      console.log('results : ', results)
+
+      return Promise.all(
+        results.map(([pair, token0, token1, reserves, totalSupply, name]) => {
+          const tokenContract0 = token0 ? getPairTokenContract(token0, CONTRACT_ERC20_ABI) : null;
+          const tokenContract1 = token1 ? getPairTokenContract(token1, CONTRACT_ERC20_ABI) : null;
+
+          return Promise.all([
+            Promise.resolve(pair),
+            Promise.resolve(reserves),
+            Promise.resolve(totalSupply),
+            Promise.resolve(name),
+            Promise.resolve(token0),
+            web3 && tokenContract0 ? call(tokenContract0.methods.decimals)() : Promise.resolve(null),
+            web3 && tokenContract0 ? call(tokenContract0.methods.name)() : Promise.resolve(null),
+            web3 && tokenContract0 ? call(tokenContract0.methods.symbol)() : Promise.resolve(null),
+            Promise.resolve(token1),
+            web3 && tokenContract1 ? call(tokenContract1.methods.decimals)() : Promise.resolve(null),
+            web3 && tokenContract1 ? call(tokenContract1.methods.name)() : Promise.resolve(null),
+            web3 && tokenContract1 ? call(tokenContract1.methods.symbol)() : Promise.resolve(null),
+            token0 ? getOnlyToken(token0) : Promise.resolve(null),
+            token1 ? getOnlyToken(token1) : Promise.resolve(null),
+          ])
+        })
+      )
+        .then((result) => {
+          console.log('result: ', result)
+          return result.map(data => {
+            const reserve0 = Array.isArray(data[1]) ? new BigNumber(data[1][0]).div(new BigNumber(10).pow(data[4])).toString(10) : new BigNumber(data[1]).div(new BigNumber(10).pow(data[4])).toString(10);
+            const reserve1 = Array.isArray(data[1]) ? new BigNumber(data[1][1]).div(new BigNumber(10).pow(data[8])).toString(10) : 0;
+            let token0Price = 0;
+            if (new BigNumber(reserve1).isZero()) {
+              token0Price = 0
+            } else {
+              token0Price = new BigNumber(reserve0).div(reserve1).toString(10);
+            }
+            let token1Price = 0;
+            if (new BigNumber(reserve0).isZero()) {
+              token1Price = 0
+            } else {
+              token1Price = new BigNumber(reserve1).div(reserve0).toString();
+            }
+            const derivedToken0 = data[12];
+            const derivedToken1 = data[13];
+            let reserveETH = new BigNumber(0);
+            if (derivedToken0 && derivedToken1) {
+              reserveETH = new BigNumber(reserve0)
+                .times(derivedToken0.derivedETH)
+                .plus(reserve1.times(derivedToken1.derivedETH))
+            } else {
+              reserveETH = new BigNumber(reserve0).times(annexPrice).div(ethPrice)
+            }
+            const reserveUSD = reserveETH.times(ethPrice)
+            const pair = {
+              id: data[0],
+              reserve0,
+              reserve1,
+              reserveETH,
+              reserveUSD,
+              token0Price,
+              token1Price,
+              totalSupply: new BigNumber(data[2]).div(1e18).toString(10),
+              token0: {
+                id: data[4],
+                decimals: data[5],
+                name: data[6],
+                symbol: data[7],
+              },
+              token1: {
+                id: data[8],
+                decimals: data[9],
+                name: data[10],
+                symbol: data[11],
+              },
+            }
+
+            return pair
+          });
+        })
+      
+
+      // return { balances, pairTokenContracts };
+    })
+    .catch(console.log);
 }
 
 function getFullPairs(offset = 0, limit = 1000, url = null) {
   if (!url) {
-    const { SWIPE_SWAP_URL } = window.variables.URLS || values[NETWORK].URLS;
-    url = SWIPE_SWAP_URL;
+    const { ANNEX_FARM_URL } = window.variables.URLS || values[NETWORK].URLS;
+    url = ANNEX_FARM_URL;
   }
 
   return new Promise((resolve, reject) => {
@@ -388,10 +462,10 @@ function getFullPairs(offset = 0, limit = 1000, url = null) {
 }
 
 function getPair(pair) {
-  const { SWIPE_SWAP_URL } = window.variables.URLS || values[NETWORK].URLS;
+  const { ANNEX_FARM_URL } = window.variables.URLS || values[NETWORK].URLS;
   return new Promise((resolve, reject) => {
     makeGraphQLRequest(
-      SWIPE_SWAP_URL,
+      ANNEX_FARM_URL,
       {
         query: `
                 query(
@@ -488,10 +562,10 @@ function getAverageBlockTime(url = null) {
 async function getToken(id, url = null) {
   const oneDayBlock = { number: 5546330 };
   const twoDayBlock = { number: 5546330 };
-  const { SWIPE_SWAP_URL } = window.variables.URLS || values[NETWORK].URLS || {};
+  const { ANNEX_FARM_URL } = window.variables.URLS || values[NETWORK].URLS || {};
 
   if (!url) {
-    url = SWIPE_SWAP_URL;
+    url = ANNEX_FARM_URL;
   }
 
   return Promise.all([
@@ -598,11 +672,52 @@ async function getToken(id, url = null) {
     });
 }
 
-function getEthPrice(url = null) {
-  const { SWIPE_SWAP_URL } = window.variables.URLS || values[NETWORK].URLS;
+function getOnlyToken(id, url = null) {
+  const { ANNEX_FARM_URL } = window.variables.URLS || values[NETWORK].URLS || {};
 
   if (!url) {
-    url = SWIPE_SWAP_URL;
+    url = ANNEX_FARM_URL;
+  }
+
+  return new Promise((resolve, reject) => {
+      makeGraphQLRequest(
+        url,
+        {
+          query: `
+                    query(
+                        $id: String!
+                    ) {
+                        token(
+                            id: $id
+                        ) ${tokenFullFields}
+                    }
+                `,
+          variables: {
+            id: id.toLowerCase(),
+          },
+        },
+        "post",
+        function (data) {
+          return resolve(data.token);
+        },
+        function (error) {
+          return reject(error);
+        }
+      );
+    })
+    .then(function (token) {
+      return token;
+    })
+    .catch(function (error) {
+      return {};
+    });
+}
+
+function getEthPrice(url = null) {
+  const { ANNEX_FARM_URL } = window.variables.URLS || values[NETWORK].URLS;
+
+  if (!url) {
+    url = ANNEX_FARM_URL;
   }
 
   return new Promise((resolve, reject) => {
@@ -652,15 +767,15 @@ function getPoolUser(id) {
                             id
                             pair
                             balance
-                            accSwipePerShare
+                            accAnnexPerShare
                             lastRewardBlock
                         }
                         amount
                         rewardDebt
                         entryUSD
                         exitUSD
-                        swipeHarvested
-                        swipeHarvestedUSD
+                        annexHarvested
+                        annexHarvestedUSD
                     }
                 }
             `,
@@ -673,10 +788,10 @@ function getPoolUser(id) {
         const { MASTERCHEF_CONTRACT, farm } = window.variables
         if (MASTERCHEF_CONTRACT) {
           if (farm && farm.POOLS) {
-            Promise.all(farm.POOLS.map(({ id: poolId, balance, accSwipePerShare, lastRewardBlock, pair }) => Promise.all([
+            Promise.all(farm.POOLS.map(({ id: poolId, balance, accAnnexPerShare, lastRewardBlock, pair }) => Promise.all([
               Promise.resolve({
                 id: `${poolId}-${id}`,
-                pool: { id: poolId, balance, accSwipePerShare, lastRewardBlock, pair }
+                pool: { id: poolId, balance, accAnnexPerShare, lastRewardBlock, pair }
               }),
               call(MASTERCHEF_CONTRACT.methods.userInfo)(poolId, id)
             ])))
@@ -711,13 +826,20 @@ function getPoolUser(id) {
   });
 }
 
-function getPairTokenContract(address) {
+function getPairTokenContract(address, abi = null) {
   if (!web3) return null;
 
-  return new web3.eth.Contract(
-    window.variables.CONTRACT_PAIR_TOKEN_ABI,
-    address
-  );
+  if (!abi) {
+    return new web3.eth.Contract(
+      window.variables.CONTRACT_PAIR_TOKEN_ABI,
+      address
+    );
+  } else {
+    return new web3.eth.Contract(
+      abi,
+      address
+    );
+  }
 }
 
 function convertFromWei(value) {
@@ -739,7 +861,7 @@ function getAllowances(address, pools) {
             address,
             window.variables.CONTRACT_MASTERCHEF_ADDRESS
           ),
-          call(MASTERCHEF_CONTRACT.methods.pendingSwipe)(pool.id, address),
+          call(MASTERCHEF_CONTRACT.methods.pendingAnnex)(pool.id, address),
           call(PAIR_TOKEN_CONTRACTS[pool.pair].methods.balanceOf)(address),
         ]);
       })
@@ -756,15 +878,17 @@ function getAllowances(address, pools) {
           }),
           {}
         );
+        console.log('pairs---- ', pairs)
         resolve(pairs);
       })
-      .catch(reject);
+      .catch(error => {
+        console.log('error : ', error);
+        reject(error)
+      });
   });
 }
 
 function getBalance(address, pairContract) {
-  const { MASTERCHEF_CONTRACT } = window.variables;
-
   return Promise.all([call(pairContract.methods.balanceOf)(address)]);
 }
 
@@ -836,13 +960,13 @@ function getAllowance(address, pool, pairContract) {
       address,
       window.variables.CONTRACT_MASTERCHEF_ADDRESS
     ),
-    call(MASTERCHEF_CONTRACT.methods.pendingSwipe)(pool.id, address),
+    call(MASTERCHEF_CONTRACT.methods.pendingAnnex)(pool.id, address),
     call(pairContract.methods.balanceOf)(address),
   ]);
 }
 
 function toChecksumAddress(address) {
-  if (!web3) return address;
+  if (!web3 || !address) return address;
 
   return web3.utils.toChecksumAddress(address);
 }

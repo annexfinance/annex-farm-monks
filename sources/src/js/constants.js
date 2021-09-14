@@ -21,22 +21,24 @@ var values = {
     URLS: {
       MASTERCHEF_URL:
         'https://api.bscgraph.org/subgraphs/id/QmddRFPdu65WizL71XRJg7TnoNjKXyb9tQsXGNVUbH24p2',
-      SWIPE_SWAP_URL:
-        'https://api.bscgraph.org/subgraphs/id/QmdWgpk8reg9ZfjUQZqpmApANMQWPRLYUX2wweDRjghQGb',
+      ANNEX_FARM_URL:
+        'https://api.studio.thegraph.com/query/6267/mainnet-swap-subgraph/v1.0.3',
       BLOCK_URL:
         'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
     },
-    CONTRACT_TOKEN_ADDRESS: '0x47BEAd2563dCBf3bF2c9407fEa4dC236fAbA485A',
-    CONTRACT_ROUTER_ADDRESS: '0x81A2E0Bdb480aFa026E10F15aB2c536c2F54433D',
-    CONTRACT_FACTORY_ADDRESS: '0xd81014579288221814b5E066AaCF0B4A00739a24',
+    CONTRACT_TOKEN_ADDRESS: '0x98936Bde1CF1BFf1e7a8012Cee5e2583851f2067',
+    CONTRACT_ROUTER_ADDRESS: '0x299385325392F537Fc6B4281d2dbe31280833Dcb',
+    CONTRACT_FACTORY_ADDRESS: '0x6a616606D9f3BaE02d215db5046b7D1030674622',
     CONTRACT_MASTERCHEF_ADDRESS: '0xe488eC90a31f225909A077F0E0463758460cb266',
+    PANCAKE_FACTORY_ADDRESS: '0x8edD47fA123c263377b9C81A449c7e601C89723E',
+    WBNB_ADDRESS: '',
   },
   97: {
     URLS: {
       MASTERCHEF_URL:
-        'https://api.bscgraph.org/subgraphs/id/QmddRFPdu65WizL71XRJg7TnoNjKXyb9tQsXGNVUbH24p2',
-      SWIPE_SWAP_URL:
-        'https://api.bscgraph.org/subgraphs/id/QmdWgpk8reg9ZfjUQZqpmApANMQWPRLYUX2wweDRjghQGb',
+        'https://api.studio.thegraph.com/query/6267/testnet-farm-subgraph/v1.0.2',
+      ANNEX_FARM_URL:
+        'https://api.studio.thegraph.com/query/6267/testnet-swap-subgraph/v1.0.2',
       BLOCK_URL:
         'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
     },
@@ -44,6 +46,8 @@ var values = {
     CONTRACT_ROUTER_ADDRESS: '0x81A2E0Bdb480aFa026E10F15aB2c536c2F54433D',
     CONTRACT_FACTORY_ADDRESS: '0xd81014579288221814b5E066AaCF0B4A00739a24',
     CONTRACT_MASTERCHEF_ADDRESS: '0xe488eC90a31f225909A077F0E0463758460cb266',
+    PANCAKE_FACTORY_ADDRESS: '0x8edD47fA123c263377b9C81A449c7e601C89723E',
+    WBNB_ADDRESS: '',
   },
   get network() {
     return this.NETWORK
@@ -56,7 +60,7 @@ var values = {
   },
 }
 
-window.SUPPORTED_NETWORKS = [1, 3, 56, 97]
+window.SUPPORTED_NETWORKS = [56, 97]
 const CONSTANTS = values.current
 function configNetwork(network) {
   values.network = network
@@ -80,7 +84,7 @@ function configNetwork(network) {
 configNetwork()
 
 // Farming
-window.variables.POOL_DENY = ['29', '45', '30']
+window.variables.POOL_DENY = []
 
 window.variables.CONTRACT_PAIR_TOKEN_ABI = [
   { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
@@ -1875,3 +1879,5 @@ window.variables.CONTRACT_WETH_ABI = [
     type: 'event',
   },
 ]
+
+window.variables.PANCAKE_FACTORY_ABI = [{"inputs":[{"internalType":"address","name":"_feeToSetter","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"token0","type":"address"},{"indexed":true,"internalType":"address","name":"token1","type":"address"},{"indexed":false,"internalType":"address","name":"pair","type":"address"},{"indexed":false,"internalType":"uint256","name":"","type":"uint256"}],"name":"PairCreated","type":"event"},{"constant":true,"inputs":[],"name":"INIT_CODE_PAIR_HASH","outputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"allPairs","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"allPairsLength","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"tokenA","type":"address"},{"internalType":"address","name":"tokenB","type":"address"}],"name":"createPair","outputs":[{"internalType":"address","name":"pair","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"feeTo","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"feeToSetter","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"getPair","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"_feeTo","type":"address"}],"name":"setFeeTo","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"address","name":"_feeToSetter","type":"address"}],"name":"setFeeToSetter","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]

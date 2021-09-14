@@ -109,7 +109,6 @@ function onNetworkChanged() {
 }
 
 function initData(callback) {
-  console.log('values : ', values)
   const {
     CONTRACT_TOKEN_ADDRESS = values[56].CONTRACT_TOKEN_ADDRESS,
   } = window.variables;
@@ -127,19 +126,27 @@ function initData(callback) {
       token,
       bundles,
     ]) {
+      console.log([
+        liquidityPositions,
+        pools,
+        averageBlockTime,
+        token,
+        bundles,
+      ]);
       const ethPrice = bundles.length !== 0 ? bundles[0].ethPrice : 0;
-      const swipePrice = ethPrice * token.derivedETH;
+      const annexPrice = ethPrice * token.derivedETH;
       const pairAddresses = pools.map((pool) => pool.pair).sort();
       const { NETWORK } = window.variables || NETWORK;
+      console.log('annexPrice: ', annexPrice)
 
-      Promise.all([getPairs(pairAddresses), getFarmALPBalance(pools)])
+      Promise.all([getPairs(pairAddresses, ethPrice, annexPrice), getFarmALPBalance(pools)])
         .then(function ([pairs, { balances, pairTokenContracts }]) {
           const filteredPools = pools
             .filter(
               (pool) =>
                 !window.variables.POOL_DENY.includes(pool.id) &&
                 pool.allocPoint !== "0" &&
-                // pool.accSwipePerShare !== "0" &&
+                // pool.accAnnexPerShare !== "0" &&
                 pairs.find((pair) => pair?.id === pool.pair)
             )
             .map((pool) => {
@@ -166,11 +173,11 @@ function initData(callback) {
 
               const rewardPerBlock =
                 ((pool.allocPoint / pool.owner.totalAllocPoint) *
-                  pool.owner.swipePerBlock) /
+                  pool.owner.annexPerBlock) /
                 1e18;
 
               const roiPerBlock = balanceUSD
-                ? (rewardPerBlock * 2 * swipePrice) / balanceUSD
+                ? (rewardPerBlock * 2 * annexPrice) / balanceUSD
                 : 0;
               const roiPerHour = roiPerBlock * blocksPerHour;
               const roiPerDay = roiPerHour * 24;
@@ -184,7 +191,7 @@ function initData(callback) {
                 roiPerDay,
                 roiPerMonth,
                 roiPerYear,
-                rewardPerThousand: 1 * roiPerDay * (1000 / swipePrice),
+                rewardPerThousand: 1 * roiPerDay * (1000 / annexPrice),
                 tvl:
                   (pair.reserveUSD / pair.totalSupply) *
                   (liquidityPosition?.liquidityTokenBalance || 0),
@@ -212,6 +219,7 @@ function initUserData(callback) {
     ACCOUNT && POOLS ? getAllowances(ACCOUNT, POOLS) : Promise.resolve([]),
   ])
     .then(([users, allowances]) => {
+      console.log('^^^^^ ', [users, allowances])
       window.variables.farm.USERS = users;
       window.variables.farm.ALLOWANCES = allowances;
       callback();
@@ -225,11 +233,12 @@ function farmTableRender() {
   // $("#farm-table-body .farm-item").remove();
   const assets =
     window.variables.TOKEN_LIST[window.variables.NETWORK || NETWORK];
+  console.log('assets : ', assets)
   if (pairList.length > 0) {
     $("#farm-table-body .farm-item").remove();
     pairList.forEach((pair) => {
-      const pairName = `${pair.liquidityPair.token0.name} ${pair.liquidityPair.token1.name}`;
-      const pairSymbol = `${pair.liquidityPair.token0.symbol}-${pair.liquidityPair.token1.symbol}`;
+      const pairName = pair.liquidityPair.token1.name ? `${pair.liquidityPair.token0.name} ${pair.liquidityPair.token1.name}` : pair.liquidityPair.token0.name;
+      const pairSymbol = pair.liquidityPair.token1.symbol ? `${pair.liquidityPair.token0.symbol}-${pair.liquidityPair.token1.symbol}` : pair.liquidityPair.token0.symbol;
       const token0 = assets.find(
         (asset) => asset.address.toLowerCase() == pair.liquidityPair.token0.id
       );
@@ -288,6 +297,19 @@ function farmTableRender() {
                               .toString(10) || 0
                           }"
                           data-title="Withdraw">UnStake</a>`;
+      }
+
+      let stakedPair = '';
+      if (pair.liquidityPair.token1.id) {
+        stakedPair = `${formatNumber(token0Amount.toNumber(), Number(pair.liquidityPair.token0.decimals))} ${
+          pair.liquidityPair.token0.symbol
+        } / ${formatNumber(token1Amount.toNumber(), Number(pair.liquidityPair.token1.decimals))} ${
+          pair.liquidityPair.token1.symbol
+        }`
+      } else {
+        stakedPair = `${formatNumber(token0Amount.toNumber(), Number(pair.liquidityPair.token0.decimals))} ${
+          pair.liquidityPair.token0.symbol
+        }`
       }
 
       const existingTR = $(".farm-list-items").find(`#pair-${pairSymbol}`);
@@ -397,11 +419,7 @@ function farmTableRender() {
               <div class="farm-list-items-item-content__cell">
                 <div class="farm-list-items-item-content__cell-wrapper-right">
                   <div class="staked-assets" id="pair-${pairSymbol}-staked-desc">
-                    ${formatNumber(token0Amount.toNumber(), token0.decimals)} ${
-                      token0.symbol
-                    } / ${formatNumber(token1Amount.toNumber(), token1.decimals)} ${
-                      token1.symbol
-                    }
+                    ${stakedPair}
                   </div>
                 </div>
               </div>
@@ -437,9 +455,7 @@ function farmTableRender() {
         existingTR
           .find(`#pair-${pairSymbol}-staked-desc`)
           .text(
-            `${formatNumber(token0Amount, token0.decimals)} ${
-              token0.symbol
-            } / ${formatNumber(token1Amount, token1.decimals)} ${token1.symbol}`
+            `${stakedPair}`
           );
 
         // Update the earned values

@@ -3,7 +3,7 @@
 var NETWORK = 1;
 const NETWORK_BSC = 56;
 const SI_SYMBOLS = ["", "k", "M", "G", "T", "P", "E"];
-const SWIPE_SWAP_URL =
+const ANNEX_FARM_URL =
   "https://api.thegraph.com/subgraphs/name/swipewallet/exchange";
 const SWIPE_SWAP_BSC_URL =
   "https://api.bscgraph.org/subgraphs/id/QmdWgpk8reg9ZfjUQZqpmApANMQWPRLYUX2wweDRjghQGb";
@@ -208,8 +208,8 @@ function initData() {
   const bscSxp = bscTokens.find((token) => token.symbol == "SXP");
 
   return Promise.all([
-    getToken(sxp.address, SWIPE_SWAP_URL),
-    getFullPairs(0, 1000, SWIPE_SWAP_URL),
+    getToken(sxp.address, ANNEX_FARM_URL),
+    getFullPairs(0, 1000, ANNEX_FARM_URL),
     getToken(bscSxp.address, SWIPE_SWAP_BSC_URL),
     getFullPairs(0, 1000, SWIPE_SWAP_BSC_URL),
   ])
@@ -230,8 +230,8 @@ function loadPools() {
   return Promise.all([
     getPools(MASTERCHEF_URL),
     getAverageBlockTime(BLOCK_URL),
-    getToken(CONTRACT_TOKEN_ADDRESS, SWIPE_SWAP_URL),
-    getEthPrice(SWIPE_SWAP_URL),
+    getToken(CONTRACT_TOKEN_ADDRESS, ANNEX_FARM_URL),
+    getEthPrice(ANNEX_FARM_URL),
   ]).then(function ([
     pools,
     averageBlockTime,
@@ -243,7 +243,7 @@ function loadPools() {
     const pairAddresses = pools.map((pool) => pool.pair).sort();
 
     return Promise.all([
-      getPairs(pairAddresses, SWIPE_SWAP_URL),
+      getPairs(pairAddresses, ANNEX_FARM_URL),
       getFarmSLPBalanceForInfo(
         pools,
         window.values[1].CONTRACT_MASTERCHEF_ADDRESS,
@@ -272,7 +272,7 @@ function loadPools() {
 
             const rewardPerBlock =
               ((pool.allocPoint / pool.owner.totalAllocPoint) *
-                pool.owner.swipePerBlock) /
+                pool.owner.annexPerBlock) /
               1e18;
 
             const roiPerBlock = balanceUSD
@@ -350,7 +350,7 @@ function loadPoolsBSC() {
 
             const rewardPerBlock =
               ((pool.allocPoint / pool.owner.totalAllocPoint) *
-                pool.owner.swipePerBlock) /
+                pool.owner.annexPerBlock) /
               1e18;
 
             const roiPerBlock = balanceUSD

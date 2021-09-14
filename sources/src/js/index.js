@@ -29,15 +29,22 @@ $(window).on("load", () => {
         }
         return a;
       }, {});
-      // Test USDTT
-      window.variables.TOKEN_LIST[3].push({
-        address: "0x7cb884B088511ED6a85dfFE702747e46d536B031",
-        decimals: 6,
-        logoURI:
-          "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
-        name: "USDT Test",
-        symbol: "USDTT",
-      });
+      window.variables.TOKEN_LIST[97] = [{
+        "name": "BUSD",
+        "address": "0x8301F2213c0eeD49a7E28Ae4c3e91722919B8B47",
+        "symbol": "BUSD",
+        "decimals": 18,
+        "chainId": 97,
+        "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x111111111117dC0aa78b770fA6A738034120C302/logo.png"
+      },
+      {
+        "chainId": 97,
+        "address": "0xB8d4DEBc77fE2D412f9bA5B22B33A8f6c4d9aE1e",
+        "name": "Annex",
+        "symbol": "ANN",
+        "decimals": 18,
+        "logoURI": "https://assets.coingecko.com/coins/images/12645/thumb/AAVE.png?1601374110"
+      }];
       networks.forEach((network) => (commonTokens[network] = commonTokens[network].filter((item) => item)));
       window.variables.COMMON_TOKENS = commonTokens;
       setInterval(() => {

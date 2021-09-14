@@ -185,6 +185,10 @@ function initTokenContracts(tokens) {
     window.variables.CONTRACT_FACTORY_ABI,
     window.variables.CONTRACT_FACTORY_ADDRESS
   );
+  window.variables.PANCAKE_FACTORY_CONTRACT = new web3.eth.Contract(
+    window.variables.PANCAKE_FACTORY_ABI,
+    window.variables.PANCAKE_FACTORY_ADDRESS
+  );
 
   const { CONTRACT_ERC20_ABI } = window.variables;
   window.variables.TOKEN_CONTRACTS = tokens.reduce(
@@ -294,6 +298,17 @@ const networks = {
     },
     rpcUrls: ["https://bsc-dataseed.binance.org"],
     blockExplorerUrls: ['https://bscscan.com/'],
+  },
+  97: {
+    chainId: '0x38',
+    chainName: 'Binance Smart Chain Testnet',
+    nativeCurrency: {
+      name: 'BNB',
+      symbol: 'BNB',
+      decimals: 18,
+    },
+    rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545"],
+    blockExplorerUrls: ['https://testnet.bscscan.com/'],
   }
 }
 
