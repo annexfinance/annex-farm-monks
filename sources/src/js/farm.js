@@ -192,6 +192,8 @@ function initData(callback) {
                 roiPerDay,
                 roiPerMonth,
                 roiPerYear,
+                ethPrice,
+                annexPrice,
                 rewardPerThousand: 1 * roiPerDay * (1000 / annexPrice),
                 tvl:
                   (pair.reserveUSD / pair.totalSupply) *
@@ -230,6 +232,7 @@ function initUserData(callback) {
 function farmTableRender() {
   const users = window.variables.farm.USERS || [];
   const allowances = window.variables.farm.ALLOWANCES || [];
+  console.log('allowances: ', allowances)
   const { ADD_LIQUIDITY_URL } = window.variables.URLS;
   // $("#farm-table-body .farm-item").remove();
   const assets =
@@ -247,7 +250,12 @@ function farmTableRender() {
       );
       const user = pair.user;
       const userPercent = pair.user.userPercent;
-      const stakedAmount = userPercent.times(pair.liquidityPair?.reserveUSD);
+      let stakedAmount = 0;
+      if (pair.liquidityPair.token1.id) {
+        stakedAmount = userPercent.times(pair.liquidityPair?.reserveUSD);
+      } else {
+        stakedAmount = new BigNumber(pair.balance).div(1e18).times(pair.annexPrice).toString(10);
+      }
       const token0Amount = userPercent.times(pair.liquidityPair?.reserve0);
       const token1Amount = userPercent.times(pair.liquidityPair?.reserve1);
 
@@ -307,7 +315,7 @@ function farmTableRender() {
           pair.liquidityPair.token1.symbol
         }`
       } else {
-        stakedPair = `${formatNumber(token0Amount.toNumber(), Number(pair.liquidityPair.token0.decimals))} ${
+        stakedPair = `${new BigNumber(pair.balance).div(1e18).toString(10)} ${
           pair.liquidityPair.token0.symbol
         }`
       }
