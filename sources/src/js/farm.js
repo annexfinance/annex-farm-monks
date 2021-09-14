@@ -239,6 +239,7 @@ function farmTableRender() {
     pairList.forEach((pair) => {
       const pairName = pair.liquidityPair.token1.name ? `${pair.liquidityPair.token0.name} ${pair.liquidityPair.token1.name}` : pair.liquidityPair.token0.name;
       const pairSymbol = pair.liquidityPair.token1.symbol ? `${pair.liquidityPair.token0.symbol}-${pair.liquidityPair.token1.symbol}` : pair.liquidityPair.token0.symbol;
+      const pairId = `${pair.liquidityPair.id}`
       const token0 = assets.find(
         (asset) => asset.address.toLowerCase() == pair.liquidityPair.token0.id
       );
@@ -312,7 +313,7 @@ function farmTableRender() {
         }`
       }
 
-      const existingTR = $(".farm-list-items").find(`#pair-${pairSymbol}`);
+      const existingTR = $(".farm-list-items").find(`#pair-${pairId}`);
       if (!existingTR.length) {
         let harvestBtn = "";
         if (
@@ -320,21 +321,21 @@ function farmTableRender() {
           (allowances[pair.pair] && !allowances[pair.pair].reward)
         ) {
           harvestBtn = `
-            <div id="pair-${pairSymbol}-earned-desc" class="descr">
+            <div id="pair-${pairId}-earned-desc" class="descr">
               ${rewardRext}
             </div>
           `;
         } else {
           harvestBtn = `
-            <div id="pair-${pairSymbol}-earned-desc" class="earn-descr">
+            <div id="pair-${pairId}-earned-desc" class="earn-descr">
               <a class="btn btn-lbiege btn-harvest-now" href="#" data-id="${pair.id}">${rewardRext}</a>
             </div>
           `;
         }
 
-        let actionTD = `<td id="pair-${pairSymbol}-actions" class="td-btns"></td>`;
+        let actionTD = `<td id="pair-${pairId}-actions" class="td-btns"></td>`;
         if (window.variables.NETWORK) {
-          actionTD = `<td id="pair-${pairSymbol}-actions" class="td-btns">
+          actionTD = `<td id="pair-${pairId}-actions" class="td-btns">
             ${addLiquidityBtn}
             ${stakeBtn}
             ${unStakeBtn}
@@ -352,24 +353,26 @@ function farmTableRender() {
             (asset) =>
               toChecksumAddress(asset.address) ===
               toChecksumAddress(pair.liquidityPair.token1.id)
-          )?.logoURI || `images/defaultAsset.svg`;
+          )?.logoURI || '';
+        const firstAssetLogo = `<img src="${firstIconUrl}" alt="${
+          pair.liquidityPair.token0.symbol
+        }">`;
+        const secondAssetLogo = secondIconUrl ? `<img src="${secondIconUrl}" alt="${
+          pair.liquidityPair.token1.symbol
+        }">` : '';
 
         // render tr to tbody
         $("#loading").hide();
         $("#no-pools").hide();
         $(".farm-list-items").append(`
-          <div class="farm-list-items-item" id="pair-${pairSymbol}">
+          <div class="farm-list-items-item" id="pair-${pairId}">
             <div class="farm-list-items-item-title">
               <div class="farm-list-items-item-title__icons">
                 <div class="first-icon">
-                  <img src="${firstIconUrl}" alt="${
-                    pair.liquidityPair.token0.symbol
-                  }">
+                  ${firstAssetLogo}
                 </div>
                 <div class="second-icon">
-                  <img src="${secondIconUrl}" alt="${
-                    pair.liquidityPair.token1.symbol
-                  }">
+                  ${secondAssetLogo}
                 </div>
               </div>
               <div class="farm-list-items-item-title__text">
@@ -411,14 +414,14 @@ function farmTableRender() {
               <div class="farm-list-items-item-content__cell">
                 <div>
                   <div class="cell-apy-title">Staked</div>
-                  <p class="cell-apy" id="pair-${pairSymbol}-staked-amount">
+                  <p class="cell-apy" id="pair-${pairId}-staked-amount">
                     ${formatNumber(stakedAmount, 2, "en", "currency", "USD")}
                   </p>
                 </div>
               </div>
               <div class="farm-list-items-item-content__cell">
                 <div class="farm-list-items-item-content__cell-wrapper-right">
-                  <div class="staked-assets" id="pair-${pairSymbol}-staked-desc">
+                  <div class="staked-assets" id="pair-${pairId}-staked-desc">
                     ${stakedPair}
                   </div>
                 </div>
@@ -429,7 +432,7 @@ function farmTableRender() {
                   <img src="images/ann.svg" alt="ANN">
                 </div>
                 <div class="cell-earned__text">
-                  <p id="pair-${pairSymbol}-earned-title">${formatNumber(
+                  <p id="pair-${pairId}-earned-title">${formatNumber(
                     reward
                   )} ANN</p>
                   ${harvestBtn}
@@ -437,7 +440,7 @@ function farmTableRender() {
               </div>
             </div>
             <div class="farm-list-items-item-actions">
-              <div class="farm-list-items-item-actions__wrapper" id="pair-${pairSymbol}-actions">
+              <div class="farm-list-items-item-actions__wrapper" id="pair-${pairId}-actions">
                 ${addLiquidityBtn}
                 <div class="farm-list-items-item-actions__wrapper-buttons">
                   ${stakeBtn}
@@ -450,44 +453,46 @@ function farmTableRender() {
       } else {
         // Update the staked values
         existingTR
-          .find(`#pair-${pairSymbol}-staked-amount`)
+          .find(`#pair-${pairId}-staked-amount`)
           .text(`${formatNumber(stakedAmount, 2, "en", "currency", "USD")}`);
         existingTR
-          .find(`#pair-${pairSymbol}-staked-desc`)
+          .find(`#pair-${pairId}-staked-desc`)
           .text(
             `${stakedPair}`
           );
 
         // Update the earned values
         existingTR
-          .find(`#pair-${pairSymbol}-earned-title`)
-          .text(`${formatNumber(reward)} SXP`);
-        existingTR.find(`#pair-${pairSymbol}-earned-desc`).empty();
+          .find(`#pair-${pairId}-earned-title`)
+          .text(`${formatNumber(reward)} ANN`);
+        existingTR.find(`#pair-${pairId}-earned-desc`).empty();
         if (
           !allowances[pair.pair] ||
           (allowances[pair.pair] && !allowances[pair.pair].reward)
         ) {
           existingTR
-            .find(`#pair-${pairSymbol}-earned-desc`)
+            .find(`#pair-${pairId}-earned-desc`)
             .text(`${rewardRext}`);
           existingTR
-            .find(`#pair-${pairSymbol}-earned-desc`)
+            .find(`#pair-${pairId}-earned-desc`)
             .removeClass("earn-descr")
             .addClass("descr");
         } else {
           existingTR
-            .find(`#pair-${pairSymbol}-earned-desc`)
+            .find(`#pair-${pairId}-earned-desc`)
             .removeClass("descr")
             .addClass("earn-descr");
-          existingTR.find(`#pair-${pairSymbol}-earned-desc`).append(`
+          existingTR.find(`#pair-${pairId}-earned-desc`).append(`
             <a class="btn btn-lbiege btn-harvest-now" href="#" data-id="${pair.id}">${rewardRext}</a>
           `);
         }
-        existingTR.find(`#pair-${pairSymbol}-actions`).empty();
-        existingTR.find(`#pair-${pairSymbol}-actions`).append(`
+        existingTR.find(`#pair-${pairId}-actions`).empty();
+        existingTR.find(`#pair-${pairId}-actions`).append(`
           ${addLiquidityBtn}
-          ${stakeBtn}
-          ${unStakeBtn}
+          <div class="farm-list-items-item-actions__wrapper-buttons">
+            ${stakeBtn}
+            ${unStakeBtn}
+          </div>
         `);
       }
     });

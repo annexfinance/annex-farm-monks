@@ -7,7 +7,14 @@
     &-settings
         display: flex
         justify-content: flex-end
-        margin-bottom: 54px
+        margin-top: 40px
+        margin-bottom: 40px
+
+        @media (min-width: $tablet)
+            margin-bottom: 54px
+
+        @media (min-width: $notebook-lg)
+            margin-bottom: 54px
 
         &__stakeonly
             margin-right: 27px
@@ -53,12 +60,20 @@
 
             &-item
                 flex-grow: 1
-                width: calc(33.333% - 38px)
+                width: calc(100% - 38px)
+                max-width: 100%
                 padding: 30px 30px 15px 30px
                 background-color: #0a0a0e
                 border: 1px solid #ff9800
                 border-radius: 20px
                 margin: 42px 19px
+
+                @media (min-width: $tablet)
+                    width: calc(50% - 38px)
+                    max-width: 516px
+
+                @media (min-width: $notebook-lg)
+                    width: calc(33.333% - 38px)
 
                 &-title
                     display: flex
@@ -186,6 +201,9 @@
                             display: flex
                             flex-direction: row
                             justify-content: space-between
+
+                            a
+                                width: 100%
 
 @keyframes lds-ring
     0%
