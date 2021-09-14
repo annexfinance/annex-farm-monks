@@ -43,7 +43,7 @@ var values = {
       BLOCK_URL:
         'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
       ADD_LIQUIDITY_URL:
-        'https://app.annex.finance/trade/liquidity/add',
+        'https://testnet.annex.finance/trade/liquidity/add',
     },
     CONTRACT_TOKEN_ADDRESS: '0xB8d4DEBc77fE2D412f9bA5B22B33A8f6c4d9aE1e',
     CONTRACT_ROUTER_ADDRESS: '0x81A2E0Bdb480aFa026E10F15aB2c536c2F54433D',

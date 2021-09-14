@@ -62,9 +62,9 @@ window.onload = function () {
     onSearch(e.target.value);
   });
 
-  if (!window.variables.NETWORK) {
-    initFarm();
-  }
+  // if (!window.variables.NETWORK) {
+  //   initFarm();
+  // }
 };
 
 function initHook() {
@@ -108,7 +108,7 @@ function refreshFarm() {
 }
 
 function onNetworkChanged() {
-  $("#farm-table-body .farm-item").remove();
+  $(".farm-list-items-item").remove();
   $("#loading").show();
   $("#no-pools").hide();
 }
@@ -142,7 +142,6 @@ function initData(callback) {
       const annexPrice = ethPrice * token.derivedETH;
       const pairAddresses = pools.map((pool) => pool.pair).sort();
       const { NETWORK } = window.variables || NETWORK;
-      console.log('annexPrice: ', annexPrice)
 
       Promise.all([getPairs(pairAddresses, ethPrice, annexPrice), getFarmALPBalance(pools)])
         .then(function ([pairs, { balances, pairTokenContracts }]) {
@@ -238,7 +237,6 @@ function farmTableRender() {
   // $("#farm-table-body .farm-item").remove();
   const assets =
     window.variables.TOKEN_LIST[window.variables.NETWORK || NETWORK];
-  console.log('assets : ', assets)
   if (pairList.length > 0) {
     pairList.forEach((pair) => {
       const pairName = pair.liquidityPair.token1.name ? `${pair.liquidityPair.token0.name} ${pair.liquidityPair.token1.name}` : pair.liquidityPair.token0.name;
