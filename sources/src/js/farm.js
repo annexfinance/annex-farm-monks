@@ -283,6 +283,10 @@ function farmTableRender() {
 
       let addLiquidityBtn = `<a class="btn" href="${ADD_LIQUIDITY_URL[pair.liquidityPair.platform]}/${pair.liquidityPair.token0.id}/${pair.liquidityPair.token1.id}" target="_new">Add Liquidity</a>`;
 
+      if (!pair.liquidityPair.token1.id) {
+        addLiquidityBtn = '<div style="height: 50px; margin-bottom: 20px;"></div>';
+      }
+
       if (!ACCOUNT) {
         addLiquidityBtn = `<a href="#connect_wallet" class="btn btn-big js-popup-open">Connect Wallet</a>`;
       }
