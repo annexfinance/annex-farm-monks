@@ -108,6 +108,8 @@ function onNetworkChanged() {
   $(".farm-list-items-item").remove();
   $("#loading").show();
   $("#no-pools").hide();
+
+  initFarm();
 }
 
 function initData(callback) {
@@ -229,6 +231,7 @@ function initUserData(callback) {
 }
 
 function farmTableRender() {
+  const { ACCOUNT } = window.variables;
   const users = window.variables.farm.USERS || [];
   const allowances = window.variables.farm.ALLOWANCES || [];
   console.log('allowances: ', allowances)
@@ -287,17 +290,21 @@ function farmTableRender() {
           ? "No rewards"
           : "Harvest Now";
 
-      const addLiquidityBtn = `<a class="btn" href="${ADD_LIQUIDITY_URL}/${pair.liquidityPair.token0.id}/${pair.liquidityPair.token1.id}" target="_new">Add Liquidity</a>`;
+      let addLiquidityBtn = `<a class="btn" href="${ADD_LIQUIDITY_URL}/${pair.liquidityPair.token0.id}/${pair.liquidityPair.token1.id}" target="_new">Add Liquidity</a>`;
+      if (!ACCOUNT) {
+        addLiquidityBtn = `<a href="#connect_wallet" class="btn btn-big js-popup-open">Connect Wallet</a>`;
+      }
       let stakeBtn = "";
       let unStakeBtn = "";
 
       if (
+        ACCOUNT &&
         (!allowances[pair.pair] ||
           (allowances[pair.pair] && !allowances[pair.pair].allowance)) &&
         new BigNumber(users ? (user?.amount || 0) / 1e18 : "0.00").isZero()
       ) {
         stakeBtn = `<a class="btn btn-link btn-approve-staking" href="#" data-address="${pair.pair}" data-name="${pairSymbol}">Approve Staking</a>`;
-      } else {
+      } else if (ACCOUNT) {
         stakeBtn = `<a class="btn js-popup-open"
                         href="#stake_asset"
                         data-id="${pair.id}"
@@ -306,9 +313,12 @@ function farmTableRender() {
                         data-type="stake"
                         data-amount="${allowances[pair.pair]?.balance || 0}"
                         data-title="Deposit">Stake</a>`;
+      } else {
+        stakeBtn = '';
       }
 
       if (
+        ACCOUNT &&
         !new BigNumber(users ? (user?.amount || 0) / 1e18 : "0.00").isZero()
       ) {
         unStakeBtn = `<a class="btn js-popup-open"
@@ -323,6 +333,8 @@ function farmTableRender() {
                               .toString(10) || 0
                           }"
                           data-title="Withdraw">UnStake</a>`;
+      } else {
+        unStakeBtn = '';
       }
 
       let stakedPair = '';
