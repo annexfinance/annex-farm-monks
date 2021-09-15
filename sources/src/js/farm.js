@@ -177,7 +177,7 @@ function initData(callback) {
               const roiPerDay = roiPerHour * 24;
               const roiPerMonth = roiPerDay * 30;
               const roiPerYear = roiPerMonth * 12;
-              console.log('poollllllllllllllll: ', pool, liquidityPosition);
+              // console.log('poollllllllllllllll: ', pool, liquidityPosition);
               
               return {
                 ...pool,
@@ -261,8 +261,12 @@ function farmTableRender() {
         if (!pair.liquidityPair.token1.id){
           console.log('token usd: ', pair.liquidityPair.token0PriceUSD, pair.lpSupply);
           const totalLiquidity = pair.liquidityPair.token0PriceUSD * pair.lpSupply / 1e18;
-          const rewardUSDPerDay = pair.rewardPerDay * pair.annexPrice;
-          pair.roiPerYear = ((1 + rewardUSDPerDay / totalLiquidity) ^ 365 - 1) * 100;
+          if (totalLiquidity == 0) {
+            pair.roiPerYear = 0;
+          } else {
+            const rewardUSDPerDay = pair.rewardPerDay * pair.annexPrice;
+            pair.roiPerYear = ((1 + rewardUSDPerDay / totalLiquidity) ^ 365 - 1) * 100;
+          }
         }
 
         console.log('volume: ', pair.id, ' ', pair.liquidityPair.volume);
