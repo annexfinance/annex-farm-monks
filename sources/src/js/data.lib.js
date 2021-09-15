@@ -430,6 +430,28 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
     .catch(console.log);
 }
 
+function getAnnPrice() {
+  const { LP_ANN_BUSD, CONTRACT_ERC20_ABI } = window.variables;
+  const lpContract = getPairTokenContract(LP_ANN_BUSD);
+  return Promise.all([
+    call(lpContract.methods.token0)(),
+    call(lpContract.methods.token1)(),
+  ])
+    .then(([token0, token1]) => {
+      const annContract = getPairTokenContract(token0, CONTRACT_ERC20_ABI);
+      const busdContract = getPairTokenContract(token1, CONTRACT_ERC20_ABI);
+
+      return Promise.all([
+        web3 && annContract ? call(annContract.methods.balanceOf)(LP_ANN_BUSD) : Promise.resolve('1'),
+        web3 && busdContract ? call(busdContract.methods.balanceOf)(LP_ANN_BUSD) : Promise.resolve('1'),
+      ])
+        .then(([ann, busd]) => {
+          console.log('&&&&&& ', ann, busd)
+          return new BigNumber(busd).div(ann).toString(10);
+        })
+    })
+}
+
 function getFullPairs(offset = 0, limit = 1000, url = null) {
   if (!url) {
     const { ANNEX_FARM_URL } = window.variables.URLS || values[NETWORK].URLS;

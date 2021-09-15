@@ -117,17 +117,20 @@ function initData(callback) {
   Promise.all([
     getLiquidityPositions(),
     getPools(),
-    getToken(CONTRACT_TOKEN_ADDRESS),
+    // getToken(CONTRACT_TOKEN_ADDRESS),
     getEthPrice(),
+    getAnnPrice(),
   ])
     .then(function ([
       liquidityPositions,
       pools,
-      token,
+      // token,
       bundles,
+      annexBundle
     ]) {
+      console.log('annexBundle: ', annexBundle)
       const ethPrice = bundles.length !== 0 ? bundles[0].ethPrice : 0;
-      const annexPrice = ethPrice * token.derivedETH;
+      const annexPrice = annexBundle;
       const pairAddresses = pools.map((pool) => pool.pair).sort();
       const { NETWORK } = window.variables || NETWORK;
       window.variables.PRICES[CONTRACT_TOKEN_ADDRESS.toLowerCase()] = annexPrice;
