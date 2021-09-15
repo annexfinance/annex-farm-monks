@@ -387,7 +387,7 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
             if (derivedToken0 && derivedToken1) {
               reserveETH = new BigNumber(reserve0)
                 .times(derivedToken0.derivedETH)
-                .plus(reserve1.times(derivedToken1.derivedETH))
+                .plus(new BigNumber(reserve1).times(derivedToken1.derivedETH))
             } else if (derivedToken0) {
               reserveETH = new BigNumber(reserve0).times(annexPrice).div(ethPrice)
             }
