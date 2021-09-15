@@ -107,8 +107,9 @@ function onNetworkChanged() {
   $(".farm-list-items-item").remove();
   $("#loading").show();
   $("#no-pools").hide();
-
-  initFarm();
+  setTimeout(() => {
+    initFarm();
+  }, 10000);
 }
 
 function initData(callback) {
