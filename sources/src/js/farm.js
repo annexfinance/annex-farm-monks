@@ -71,7 +71,6 @@ function initHook() {
 function initFarm() {
   console.log("initFarm");
   initData(function (pools, contracts) {
-    console.log('POOOOOOOLS : ', pools)
     window.variables.PAIR_TOKEN_CONTRACTS = contracts;
     window.variables.farm.POOLS = pools;
     window.variables.farm.USERS = [];
@@ -130,7 +129,6 @@ function initData(callback) {
       bundles,
       annexBundle
     ]) {
-      console.log('annexBundle: ', annexBundle)
       const ethPrice = bundles.length !== 0 ? bundles[0].ethPrice : 0;
       const annexPrice = annexBundle;
       const pairAddresses = pools.map((pool) => pool.pair).sort();
@@ -156,7 +154,6 @@ function initData(callback) {
               const averageBlockTime = 3;//NETWORK == BSC ? 3 : averageBlockTime;
               const balance = balances[pool.pair].balance.toString(10); // Number(pool.balance / 1e18);
               const blocksPerHour = 3600 / averageBlockTime;
-              console.log('balance: ', balance)
 
               // const rewardPerBlock =
               //   100 - 100 * (pool45.allocPoint / pool45.owner.totalAllocPoint);
@@ -234,13 +231,11 @@ function farmTableRender() {
   const { ACCOUNT } = window.variables;
   const users = window.variables.farm.USERS || [];
   const allowances = window.variables.farm.ALLOWANCES || [];
-  console.log('allowances: ', allowances)
   const { ADD_LIQUIDITY_URL } = window.variables.URLS;
   // $("#farm-table-body .farm-item").remove();
   const assets =
     window.variables.TOKEN_LIST[window.variables.NETWORK || NETWORK];
   if (pairList.length > 0) {
-    console.log('pair: ', pairList);
     pairList.forEach((pair) => {
       const pairName = pair.liquidityPair.token1.name ? `${pair.liquidityPair.token0.name} ${pair.liquidityPair.token1.name}` : pair.liquidityPair.token0.name;
       const pairSymbol = pair.liquidityPair.token1.symbol ? `${pair.liquidityPair.token0.symbol}-${pair.liquidityPair.token1.symbol}` : pair.liquidityPair.token0.symbol;
@@ -265,7 +260,6 @@ function farmTableRender() {
           .plus(pair.liquidityPair.token1PriceUSD)).times(pair.lpSupply).div(1e18).toString(10);
 
         if (!pair.liquidityPair.token1.id){
-          console.log('token usd: ', pair.liquidityPair.token0PriceUSD, pair.lpSupply);
           const totalLiquidity = pair.liquidityPair.token0PriceUSD * pair.lpSupply / 1e18;
           if (totalLiquidity == 0) {
             pair.roiPerYear = 0;
@@ -274,8 +268,6 @@ function farmTableRender() {
             pair.roiPerYear = ((1 + rewardUSDPerDay / totalLiquidity) ^ 365 - 1) * 100;
           }
         }
-
-        console.log('volume: ', pair.id, ' ', pair.liquidityPair.volume);
       }
       const token0Amount = userPercent.times(pair.liquidityPair?.reserve0);
       const token1Amount = userPercent.times(pair.liquidityPair?.reserve1);

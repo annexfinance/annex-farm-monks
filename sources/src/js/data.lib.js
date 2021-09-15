@@ -244,7 +244,6 @@ console.log('network: ', NETWORK);
       })
     )
       .then((poolInfos) => {
-        console.log('pool infos: ', poolInfos);
         const pools = poolInfos.map(([poolId, info, user]) => {
           return {
             id: poolId.toString(),
@@ -335,8 +334,6 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
     })
   )
     .then((results) => {
-      console.log('results : ', results)
-
       return Promise.all(
         results.map(([pair, token0, token1, reserves, totalSupply, name]) => {
           const tokenContract0 = token0 ? getPairTokenContract(token0, CONTRACT_ERC20_ABI) : null;
@@ -361,11 +358,9 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
         })
       )
         .then((result) => {
-          console.log('result: ', result)
           return result.map(data => {
             const reserve0 = data[1]._reserve0 ? new BigNumber(data[1]._reserve0).div(new BigNumber(10).pow(data[5])).toString(10) : new BigNumber(data[1]).div(new BigNumber(10).pow(data[5])).toString(10);
             const reserve1 = data[1]._reserve1 ? new BigNumber(data[1]._reserve1).div(new BigNumber(10).pow(data[9])).toString(10) : 0;
-            console.log('------- ', reserve0, reserve1)
             let token0Price = 0;
             if (new BigNumber(reserve1).isZero()) {
               token0Price = 0
@@ -382,7 +377,6 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
             const derivedToken1 = data[13];
             const token0PriceUSD = data[4] ? window.variables.PRICES[data[4].toLowerCase()] : 0;
             const token1PriceUSD = data[8] ? window.variables.PRICES[data[8].toLowerCase()] : 0;
-            console.log('prices : ', token0PriceUSD, token1PriceUSD)
             let reserveETH = new BigNumber(0);
             if (derivedToken0 && derivedToken1) {
               reserveETH = new BigNumber(reserve0)
@@ -391,11 +385,9 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
             } else if (derivedToken0) {
               reserveETH = new BigNumber(reserve0).times(annexPrice).div(ethPrice)
             }
-            console.log('reserveETH: ', reserveETH.toString(10))
 
             const reserve0USD = new BigNumber(reserve0).times(token0PriceUSD);
             const reserve1USD = new BigNumber(reserve1).times(token1PriceUSD);
-            console.log('====== ', reserve0USD.toString(10), reserve1USD.toString(10))
             const reserveUSD = reserve0USD.plus(reserve1USD);
             // const reserveUSD = reserveETH.times(ethPrice)
             const pair = {
