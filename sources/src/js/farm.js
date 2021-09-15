@@ -340,7 +340,7 @@ function farmTableRender() {
           pair.liquidityPair.token1.symbol
         }`
       } else {
-        stakedPair = `${new BigNumber(pair.balance).div(1e18).toString(10)} ${
+        stakedPair = `${new BigNumber(pair.balance).div(1e18).dp(4, 1).toString(10)} ${
           pair.liquidityPair.token0.symbol
         }`
       }
