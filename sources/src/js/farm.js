@@ -179,7 +179,6 @@ function initData(callback) {
               const roiPerDay = roiPerHour * 24;
               const roiPerMonth = roiPerDay * 30;
               const roiPerYear = roiPerMonth * 12;
-              // console.log('poollllllllllllllll: ', pool, liquidityPosition);
               
               return {
                 ...pool,
@@ -282,7 +281,8 @@ function farmTableRender() {
           ? "No rewards"
           : "Harvest Now";
 
-      let addLiquidityBtn = `<a class="btn" href="${ADD_LIQUIDITY_URL}/${pair.liquidityPair.token0.id}/${pair.liquidityPair.token1.id}" target="_new">Add Liquidity</a>`;
+      let addLiquidityBtn = `<a class="btn" href="${ADD_LIQUIDITY_URL[pair.liquidityPair.platform]}/${pair.liquidityPair.token0.id}/${pair.liquidityPair.token1.id}" target="_new">Add Liquidity</a>`;
+
       if (!ACCOUNT) {
         addLiquidityBtn = `<a href="#connect_wallet" class="btn btn-big js-popup-open">Connect Wallet</a>`;
       }
@@ -340,6 +340,11 @@ function farmTableRender() {
         stakedPair = `${new BigNumber(pair.balance).div(1e18).toString(10)} ${
           pair.liquidityPair.token0.symbol
         }`
+      }
+
+      let platform = `<img class="platform-logo" src="images/annexswap-logo.png" title="${pair.liquidityPair.pairName}" />`;
+      if (pair.liquidityPair.platform === 'pancake') {
+        platform = `<img class="platform-logo" src="images/pancakeswap-logo.png" title="${pair.liquidityPair.pairName}" />`;
       }
 
       const existingTR = $(".farm-list-items").find(`#pair-${pairId}`);
@@ -407,6 +412,9 @@ function farmTableRender() {
               <div class="farm-list-items-item-title__text">
                 <p>${pairName}</p>
                 <div class="descr">${pairSymbol}</div>
+              </div>
+              <div class="farm-list-items-item-title__platform">
+                ${platform}
               </div>
             </div>
             <div class="farm-list-items-item-content">

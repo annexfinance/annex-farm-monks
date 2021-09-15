@@ -311,7 +311,7 @@ async function getLiquidityPositions() {
 }
 
 function getPairs(pairAddresses, ethPrice, annexPrice) {
-  const { CONTRACT_TOKEN_ADDRESS, CONTRACT_TOKEN_ABI, CONTRACT_ERC20_ABI } = window.variables;
+  const { CONTRACT_TOKEN_ADDRESS, CONTRACT_TOKEN_ABI, CONTRACT_ERC20_ABI, PANCAKE_FACTORY_ADDRESS } = window.variables;
   
   const pairContracts = pairAddresses.map(pairAddress => {
     if (toChecksumAddress(pairAddress) === toChecksumAddress(CONTRACT_TOKEN_ADDRESS)) {
@@ -330,14 +330,20 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
         web3 && pairContract[1].methods.getReserves ? call(pairContract[1].methods.getReserves)() : Promise.resolve('0'),
         web3 && pairContract[1].methods.totalSupply ? call(pairContract[1].methods.totalSupply)() : Promise.resolve(null),
         web3 && pairContract[1].methods.name ? call(pairContract[1].methods.name)() : Promise.resolve(null),
+        web3 && pairContract[1].methods.factory ? call(pairContract[1].methods.factory)() : Promise.resolve(null),
       ]);
     })
   )
     .then((results) => {
       return Promise.all(
-        results.map(([pair, token0, token1, reserves, totalSupply, name]) => {
+        results.map(([pair, token0, token1, reserves, totalSupply, name, factory]) => {
           const tokenContract0 = token0 ? getPairTokenContract(token0, CONTRACT_ERC20_ABI) : null;
           const tokenContract1 = token1 ? getPairTokenContract(token1, CONTRACT_ERC20_ABI) : null;
+
+          let platform = 'annex';
+          if (factory && factory.toLowerCase() === PANCAKE_FACTORY_ADDRESS.toLowerCase()) {
+            platform = 'pancake'
+          }
 
           return Promise.all([
             Promise.resolve(pair),
@@ -354,6 +360,8 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
             web3 && tokenContract1 ? call(tokenContract1.methods.symbol)() : Promise.resolve(null),
             token0 ? getOnlyToken(token0) : Promise.resolve(null),
             token1 ? getOnlyToken(token1) : Promise.resolve(null),
+            Promise.resolve(factory),
+            Promise.resolve(platform),
           ])
         })
       )
@@ -392,6 +400,7 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
             // const reserveUSD = reserveETH.times(ethPrice)
             const pair = {
               id: data[0],
+              pairName: data[3],
               reserve0,
               reserve1,
               reserveETH,
@@ -413,6 +422,8 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
                 name: data[10],
                 symbol: data[11],
               },
+              factory: data[14],
+              platform: data[15],
             }
 
             return pair
