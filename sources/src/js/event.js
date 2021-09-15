@@ -49,7 +49,7 @@ window.events = {
       (token) => token.symbol === "WETH" || token.symbol === "WBNB"
     )?.address;
     initTokenContracts(tokens);
-    selectToken(commonBases, tokens);
+    // selectToken(commonBases, tokens);
 
     ACCOUNT && NETWORK && triggers.forEach(triggerEvent);
   },

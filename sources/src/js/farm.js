@@ -177,6 +177,8 @@ function initData(callback) {
               const roiPerDay = roiPerHour * 24;
               const roiPerMonth = roiPerDay * 30;
               const roiPerYear = roiPerMonth * 12;
+              console.log('poollllllllllllllll: ', pool, liquidityPosition);
+              
               return {
                 ...pool,
                 liquidityPair: pair,
@@ -232,6 +234,7 @@ function farmTableRender() {
   const assets =
     window.variables.TOKEN_LIST[window.variables.NETWORK || NETWORK];
   if (pairList.length > 0) {
+    console.log('pair: ', pairList);
     pairList.forEach((pair) => {
       const pairName = pair.liquidityPair.token1.name ? `${pair.liquidityPair.token0.name} ${pair.liquidityPair.token1.name}` : pair.liquidityPair.token0.name;
       const pairSymbol = pair.liquidityPair.token1.symbol ? `${pair.liquidityPair.token0.symbol}-${pair.liquidityPair.token1.symbol}` : pair.liquidityPair.token0.symbol;
@@ -249,6 +252,20 @@ function farmTableRender() {
         stakedAmount = userPercent.times(pair.liquidityPair?.reserveUSD);
       } else {
         stakedAmount = new BigNumber(pair.balance).div(1e18).times(window.variables.PRICES[pair.liquidityPair.token0.id]).toString(10);
+      }
+
+      if (pair.liquidityPair) {
+        pair.liquidityPair.volume = (new BigNumber(pair.liquidityPair.token0PriceUSD)
+          .plus(pair.liquidityPair.token1PriceUSD)).times(pair.lpSupply).div(1e18).toString(10);
+
+        if (!pair.liquidityPair.token1.id){
+          console.log('token usd: ', pair.liquidityPair.token0PriceUSD, pair.lpSupply);
+          const totalLiquidity = pair.liquidityPair.token0PriceUSD * pair.lpSupply / 1e18;
+          const rewardUSDPerDay = pair.rewardPerDay * pair.annexPrice;
+          pair.roiPerYear = ((1 + rewardUSDPerDay / totalLiquidity) ^ 365 - 1) * 100;
+        }
+
+        console.log('volume: ', pair.id, ' ', pair.liquidityPair.volume);
       }
       const token0Amount = userPercent.times(pair.liquidityPair?.reserve0);
       const token1Amount = userPercent.times(pair.liquidityPair?.reserve1);
@@ -382,14 +399,14 @@ function farmTableRender() {
               </div>
             </div>
             <div class="farm-list-items-item-content">
-              <div class="farm-list-items-item-content__cell">Yield (per $1,000) : </div>
+              <div class="farm-list-items-item-content__cell">Yield : </div>
               <div class="farm-list-items-item-content__cell">
                 <div class="cell-yield__icon">
                   <img src="images/ann.svg" alt="ANN">
                 </div>
                 <div class="cell-yield__text">
                   <p>${formatNumber(pair.rewardPerDay, 2)} ANN/Day</p>
-                  <div class="descr">${pair.allocPoint} allocPoint</div>
+                  <div class="descr">${pair.allocPoint}x Multiplier</div>
                 </div>
               </div>
               <div class="farm-list-items-item-content__cell">
@@ -403,7 +420,7 @@ function farmTableRender() {
                   <div class="cell-apy-title">Liquidity</div>
                   <div class="cell-apy">
                     ${formatNumber(
-                      pair.liquidityPair.reserveUSD,
+                      pair.liquidityPair.volume,
                       2,
                       "en",
                       "currency",

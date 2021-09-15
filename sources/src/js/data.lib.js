@@ -82,6 +82,7 @@ function makeGraphQLRequest(
     dataType: "json",
     contentType: "application/json",
     success: function (response) {
+      // console.log('graph response: ', response);
       if (response.data) {
         if (success) {
           success(response.data);
@@ -211,10 +212,10 @@ async function getPools(url = null) {
 }
 
 function getPoolsFromBSC() {
-  let { MASTERCHEF_CONTRACT, ACCOUNT } = window.variables;
-
+  let { MASTERCHEF_CONTRACT, ACCOUNT, NETWORK } = window.variables;
+console.log('network: ', NETWORK);
   if (!MASTERCHEF_CONTRACT) {
-    const { CONTRACT_MASTERCHEF_ADDRESS } = window.values[56];
+    const { CONTRACT_MASTERCHEF_ADDRESS } = window.values[NETWORK];
     const BSC_PROVIDER = "https://bsc-dataseed.binance.org/";
     web3.setProvider(BSC_PROVIDER);
     MASTERCHEF_CONTRACT = new web3.eth.Contract(
@@ -237,15 +238,17 @@ function getPoolsFromBSC() {
       poolIds.map((pid) => {
         return Promise.all([
           Promise.resolve(pid),
-          call(MASTERCHEF_CONTRACT.methods.poolInfo)(pid),
+          call(MASTERCHEF_CONTRACT.methods.getPoolInfo)(pid),
           ACCOUNT ? call(MASTERCHEF_CONTRACT.methods.userInfo)(pid, ACCOUNT) : Promise.resolve({ amount: 0, rewardDebt: 0 }),
         ]);
       })
     )
       .then((poolInfos) => {
+        console.log('pool infos: ', poolInfos);
         const pools = poolInfos.map(([poolId, info, user]) => {
           return {
             id: poolId.toString(),
+            lpSupply: info.lpSupply,
             allocPoint: info.allocPoint,
             lastRewardBlock: info.lastRewardBlock,
             pair: info.lpToken.toLowerCase(),
