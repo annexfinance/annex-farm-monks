@@ -45,18 +45,18 @@ window.onload = function () {
     approveStaking(address, name);
   });
 
-  $(document).on("change", "#farm-sort", function (e) {
-    e.preventDefault();
-    if (e.target.value === 'apy') {
-      onSort("apy");
-    } else if (e.target.value === 'allocpoint') {
-      onSort("allocpoint");
-    } else if (e.target.value === 'earned') {
-      onSort("earned");
-    } else {
-      onSort("liquidity");
-    }
-  });
+  // $(document).on("change", "#farm-sort", function (e) {
+  //   e.preventDefault();
+  //   if (e.target.value === 'apy') {
+  //     onSort("apy");
+  //   } else if (e.target.value === 'allocpoint') {
+  //     onSort("allocpoint");
+  //   } else if (e.target.value === 'earned') {
+  //     onSort("earned");
+  //   } else {
+  //     onSort("liquidity");
+  //   }
+  // });
 
   $(document).on("change", "#farm-search", function (e) {
     e.preventDefault();
