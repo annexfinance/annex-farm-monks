@@ -382,14 +382,17 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
             const derivedToken1 = data[13];
             const token0PriceUSD = data[4] ? window.variables.PRICES[data[4].toLowerCase()] : 0;
             const token1PriceUSD = data[8] ? window.variables.PRICES[data[8].toLowerCase()] : 0;
+            console.log('prices : ', token0PriceUSD, token1PriceUSD)
             let reserveETH = new BigNumber(0);
             if (derivedToken0 && derivedToken1) {
               reserveETH = new BigNumber(reserve0)
                 .times(derivedToken0.derivedETH)
                 .plus(reserve1.times(derivedToken1.derivedETH))
-            } else {
+            } else if (derivedToken0) {
               reserveETH = new BigNumber(reserve0).times(annexPrice).div(ethPrice)
             }
+            console.log('reserveETH: ', reserveETH.toString(10))
+
             const reserve0USD = new BigNumber(reserve0).times(token0PriceUSD);
             const reserve1USD = new BigNumber(reserve1).times(token1PriceUSD);
             console.log('====== ', reserve0USD.toString(10), reserve1USD.toString(10))

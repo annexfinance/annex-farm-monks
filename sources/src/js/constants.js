@@ -20,9 +20,9 @@ var values = {
   56: {
     URLS: {
       MASTERCHEF_URL:
-        "https://api.bscgraph.org/subgraphs/id/QmddRFPdu65WizL71XRJg7TnoNjKXyb9tQsXGNVUbH24p2",
+        "https://api.studio.thegraph.com/query/6267/mainnet-farm-subgraph/v1.0.2",
       ANNEX_FARM_URL:
-        "https://api.studio.thegraph.com/query/6267/mainnet-swap-subgraph/v1.0.3",
+        "https://api.studio.thegraph.com/query/6267/mainnet-swap-subgraph/v1.0.4",
       BLOCK_URL:
         "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
       ADD_LIQUIDITY_URL: "https://app.annex.finance/trade/liquidity/add",
@@ -30,7 +30,7 @@ var values = {
     CONTRACT_TOKEN_ADDRESS: "0x98936Bde1CF1BFf1e7a8012Cee5e2583851f2067",
     CONTRACT_ROUTER_ADDRESS: "0x299385325392F537Fc6B4281d2dbe31280833Dcb",
     CONTRACT_FACTORY_ADDRESS: "0x6a616606D9f3BaE02d215db5046b7D1030674622",
-    CONTRACT_MASTERCHEF_ADDRESS: "0xDd1651eb0De5648e73Bd7EE8af8cFEF7681Dc915",
+    CONTRACT_MASTERCHEF_ADDRESS: "0x9c821500eaBa9f9737fDAadF7984Dff03edc74d1",
     PANCAKE_FACTORY_ADDRESS: "0x8edD47fA123c263377b9C81A449c7e601C89723E",
     PRICES: {
       "0xe9e7cea3dedca5984780bafc599bd69add087d56": 1,

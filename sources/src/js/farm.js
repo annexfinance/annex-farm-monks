@@ -1,7 +1,7 @@
 "use strict";
 
 const BSC = 56;
-const NETWORK = 1;
+const NETWORK = 56;
 let pairList = [];
 let sortField = "apy";
 let sortDirection = "desc";
@@ -126,8 +126,9 @@ function initData(callback) {
       token,
       bundles,
     ]) {
+      console.log('liquidityPositions: ', liquidityPositions);
       const ethPrice = bundles.length !== 0 ? bundles[0].ethPrice : 0;
-      const annexPrice = 0.5;//ethPrice * token.derivedETH;
+      const annexPrice = ethPrice * token.derivedETH;
       const pairAddresses = pools.map((pool) => pool.pair).sort();
       const { NETWORK } = window.variables || NETWORK;
       window.variables.PRICES[CONTRACT_TOKEN_ADDRESS.toLowerCase()] = annexPrice;
