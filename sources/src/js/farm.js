@@ -253,20 +253,18 @@ function farmTableRender() {
       } else {
         stakedAmount = new BigNumber(pair.balance).div(1e18).times(window.variables.PRICES[pair.liquidityPair.token0.id]).toString(10);
       }
-
       if (pair.liquidityPair) {
         pair.liquidityPair.volume = (new BigNumber(pair.liquidityPair.token0PriceUSD)
           .plus(pair.liquidityPair.token1PriceUSD)).times(pair.lpSupply).div(1e18).toString(10);
-
-        if (!pair.liquidityPair.token1.id){
-          const totalLiquidity = pair.liquidityPair.token0PriceUSD * pair.lpSupply / 1e18;
-          if (totalLiquidity == 0) {
+        // if (!pair.liquidityPair.token1.id){
+          // const totalLiquidity = pair.liquidityPair.token0PriceUSD * pair.lpSupply / 1e18;
+          if (pair.liquidityPair.volume == 0) {
             pair.roiPerYear = 0;
           } else {
             const rewardUSDPerDay = pair.rewardPerDay * pair.annexPrice;
-            pair.roiPerYear = ((1 + rewardUSDPerDay / totalLiquidity) ^ 365 - 1) * 100;
+            pair.roiPerYear = (new BigNumber(1 + rewardUSDPerDay / pair.liquidityPair.volume).pow(365).minus(1)).toString(10);
           }
-        }
+        // }
       }
       const token0Amount = userPercent.times(pair.liquidityPair?.reserve0);
       const token1Amount = userPercent.times(pair.liquidityPair?.reserve1);

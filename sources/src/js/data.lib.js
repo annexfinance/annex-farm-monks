@@ -1156,6 +1156,8 @@ const formatNumber = (
     value = new Intl.NumberFormat(locale, { style, currency }).format(newValue);
   } else if (style) {
     value = new Intl.NumberFormat(locale, { style }).format(newValue);
+  } else if (value > 100000000000) {
+    value = 'Infinite';
   } else {
     value = new Intl.NumberFormat(locale).format(newValue);
   }
