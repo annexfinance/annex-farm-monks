@@ -446,7 +446,6 @@ function getAnnPrice() {
         web3 && busdContract ? call(busdContract.methods.balanceOf)(LP_ANN_BUSD) : Promise.resolve('1'),
       ])
         .then(([ann, busd]) => {
-          console.log('&&&&&& ', ann, busd)
           return new BigNumber(busd).div(ann).toString(10);
         })
     })
