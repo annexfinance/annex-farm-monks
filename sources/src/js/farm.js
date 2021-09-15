@@ -126,7 +126,6 @@ function initData(callback) {
       token,
       bundles,
     ]) {
-      console.log('liquidityPositions: ', liquidityPositions);
       const ethPrice = bundles.length !== 0 ? bundles[0].ethPrice : 0;
       const annexPrice = ethPrice * token.derivedETH;
       const pairAddresses = pools.map((pool) => pool.pair).sort();
