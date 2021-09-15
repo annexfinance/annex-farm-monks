@@ -117,28 +117,20 @@ function initData(callback) {
   Promise.all([
     getLiquidityPositions(),
     getPools(),
-    getAverageBlockTime(),
     getToken(CONTRACT_TOKEN_ADDRESS),
     getEthPrice(),
   ])
     .then(function ([
       liquidityPositions,
       pools,
-      averageBlockTime,
       token,
       bundles,
     ]) {
-      console.log([
-        liquidityPositions,
-        pools,
-        averageBlockTime,
-        token,
-        bundles,
-      ]);
       const ethPrice = bundles.length !== 0 ? bundles[0].ethPrice : 0;
-      const annexPrice = ethPrice * token.derivedETH;
+      const annexPrice = 0.5;//ethPrice * token.derivedETH;
       const pairAddresses = pools.map((pool) => pool.pair).sort();
       const { NETWORK } = window.variables || NETWORK;
+      window.variables.PRICES[CONTRACT_TOKEN_ADDRESS.toLowerCase()] = annexPrice;
 
       Promise.all([getPairs(pairAddresses, ethPrice, annexPrice), getFarmALPBalance(pools)])
         .then(function ([pairs, { balances, pairTokenContracts }]) {
@@ -156,9 +148,10 @@ function initData(callback) {
                 (liquidityPosition) => liquidityPosition.pair.id === pair.id
               );
 
-              averageBlockTime = NETWORK == BSC ? 4 : averageBlockTime;
+              const averageBlockTime = 3;//NETWORK == BSC ? 3 : averageBlockTime;
               const balance = balances[pool.pair].balance.toString(10); // Number(pool.balance / 1e18);
               const blocksPerHour = 3600 / averageBlockTime;
+              console.log('balance: ', balance)
 
               // const rewardPerBlock =
               //   100 - 100 * (pool45.allocPoint / pool45.owner.totalAllocPoint);
@@ -178,7 +171,7 @@ function initData(callback) {
                 1e18;
 
               const roiPerBlock = balanceUSD
-                ? (rewardPerBlock * 2 * annexPrice) / balanceUSD
+                ? (rewardPerBlock * annexPrice) / balanceUSD
                 : 0;
               const roiPerHour = roiPerBlock * blocksPerHour;
               const roiPerDay = roiPerHour * 24;
@@ -195,6 +188,7 @@ function initData(callback) {
                 ethPrice,
                 annexPrice,
                 rewardPerThousand: 1 * roiPerDay * (1000 / annexPrice),
+                rewardPerDay: rewardPerBlock * blocksPerHour * 24,
                 tvl:
                   (pair.reserveUSD / pair.totalSupply) *
                   (liquidityPosition?.liquidityTokenBalance || 0),
@@ -254,7 +248,7 @@ function farmTableRender() {
       if (pair.liquidityPair.token1.id) {
         stakedAmount = userPercent.times(pair.liquidityPair?.reserveUSD);
       } else {
-        stakedAmount = new BigNumber(pair.balance).div(1e18).times(pair.annexPrice).toString(10);
+        stakedAmount = new BigNumber(pair.balance).div(1e18).times(window.variables.PRICES[pair.liquidityPair.token0.id]).toString(10);
       }
       const token0Amount = userPercent.times(pair.liquidityPair?.reserve0);
       const token1Amount = userPercent.times(pair.liquidityPair?.reserve1);
@@ -394,7 +388,7 @@ function farmTableRender() {
                   <img src="images/ann.svg" alt="ANN">
                 </div>
                 <div class="cell-yield__text">
-                  <p>${formatNumber(pair.rewardPerThousand, 2)} ANN/Day</p>
+                  <p>${formatNumber(pair.rewardPerDay, 2)} ANN/Day</p>
                   <div class="descr">${pair.allocPoint} allocPoint</div>
                 </div>
               </div>

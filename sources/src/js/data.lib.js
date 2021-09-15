@@ -362,9 +362,7 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
           return result.map(data => {
             const reserve0 = data[1]._reserve0 ? new BigNumber(data[1]._reserve0).div(new BigNumber(10).pow(data[5])).toString(10) : new BigNumber(data[1]).div(new BigNumber(10).pow(data[5])).toString(10);
             const reserve1 = data[1]._reserve1 ? new BigNumber(data[1]._reserve1).div(new BigNumber(10).pow(data[9])).toString(10) : 0;
-            console.log('reserve: ', data[1]._reserve0, data[1]._reserve1)
-            console.log('reserve0: ', reserve0)
-            console.log('reserve1: ', reserve1)
+            console.log('------- ', reserve0, reserve1)
             let token0Price = 0;
             if (new BigNumber(reserve1).isZero()) {
               token0Price = 0
@@ -379,6 +377,8 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
             }
             const derivedToken0 = data[12];
             const derivedToken1 = data[13];
+            const token0PriceUSD = data[4] ? window.variables.PRICES[data[4].toLowerCase()] : 0;
+            const token1PriceUSD = data[8] ? window.variables.PRICES[data[8].toLowerCase()] : 0;
             let reserveETH = new BigNumber(0);
             if (derivedToken0 && derivedToken1) {
               reserveETH = new BigNumber(reserve0)
@@ -387,7 +387,11 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
             } else {
               reserveETH = new BigNumber(reserve0).times(annexPrice).div(ethPrice)
             }
-            const reserveUSD = reserveETH.times(ethPrice)
+            const reserve0USD = new BigNumber(reserve0).times(token0PriceUSD);
+            const reserve1USD = new BigNumber(reserve1).times(token1PriceUSD);
+            console.log('====== ', reserve0USD.toString(10), reserve1USD.toString(10))
+            const reserveUSD = reserve0USD.plus(reserve1USD);
+            // const reserveUSD = reserveETH.times(ethPrice)
             const pair = {
               id: data[0],
               reserve0,
@@ -396,6 +400,8 @@ function getPairs(pairAddresses, ethPrice, annexPrice) {
               reserveUSD,
               token0Price,
               token1Price,
+              token0PriceUSD,
+              token1PriceUSD,
               totalSupply: new BigNumber(data[2]).div(1e18).toString(10),
               token0: {
                 id: data[4],
