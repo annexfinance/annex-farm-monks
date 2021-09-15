@@ -1,5 +1,5 @@
 function shortenAddr(address) {
-  if (!address) return 'Unlock Wallet';
+  if (!address) return 'Connect Wallet';
   return `${address.substr(0, 5)}...${address.substr(-4)}`;
 }
 

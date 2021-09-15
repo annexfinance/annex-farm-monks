@@ -3,7 +3,7 @@
 const BSC = 56;
 const NETWORK = 56;
 let pairList = [];
-let sortField = "apy";
+let sortField = "";
 let sortDirection = "desc";
 let searchKeyward = "";
 
