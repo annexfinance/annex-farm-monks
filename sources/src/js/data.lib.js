@@ -2,11 +2,11 @@
 const NETWORK = 56;
 
 const tokenFields = `{
-    id
-    name
-    symbol
-    totalSupply
-    derivedETH
+  id
+  name
+  symbol
+  totalSupply
+  derivedETH
 }`;
 
 const factoryFields = `{
@@ -21,43 +21,43 @@ const factoryFields = `{
 }`;
 
 const pairFields = `{
-    id
-    reserveUSD
-    reserveETH
-    volumeUSD
-    untrackedVolumeUSD
-    trackedReserveETH
-    token0 ${tokenFields}
-    token1 ${tokenFields}
-    reserve0
-    reserve1
-    token0Price
-    token1Price
-    totalSupply
-    txCount
-    timestamp
+  id
+  reserveUSD
+  reserveETH
+  volumeUSD
+  untrackedVolumeUSD
+  trackedReserveETH
+  token0 ${tokenFields}
+  token1 ${tokenFields}
+  reserve0
+  reserve1
+  token0Price
+  token1Price
+  totalSupply
+  txCount
+  timestamp
 }`;
 
 const blockFields = `{
-    id
-    number
-    timestamp
+  id
+  number
+  timestamp
 }`;
 
 const tokenFullFields = `{
-    id
-    symbol
-    name
-    decimals
-    totalSupply
-    volume
-    volumeUSD
-    untrackedVolumeUSD
-    txCount
-    liquidity
-    derivedETH
-    basePairs ${pairFields}
-    quotePairs ${pairFields}
+  id
+  symbol
+  name
+  decimals
+  totalSupply
+  volume
+  volumeUSD
+  untrackedVolumeUSD
+  txCount
+  liquidity
+  derivedETH
+  basePairs ${pairFields}
+  quotePairs ${pairFields}
 }`;
 
 const globalFailed = function (error) {
@@ -107,38 +107,38 @@ async function getPool(id) {
       MASTERCHEF_URL,
       {
         query: `
-                query(
-                    $id: ID!
-                    ) {
-                        pools(
-                            id: $id
-                        ) {
-                            id
-                            pair
-                            allocPoint
-                            lastRewardBlock
-                            accAnnexPerShare
-                            balance
-                            userCount
-                            owner {
-                                id
-                                annexPerBlock
-                                totalAllocPoint
-                            }
-                            users(orderBy: amount, orderDirection: desc) {
-                                id
-                                address
-                                amount
-                                rewardDebt
-                            }
-                            slpAge
-                            liquidityPair @client
-                            timestamp
-                            entryUSD
-                            exitUSD
-                        }
-                    }
-            `,
+          query(
+            $id: ID!
+            ) {
+              pools(
+                id: $id
+              ) {
+                id
+                pair
+                allocPoint
+                lastRewardBlock
+                accAnnexPerShare
+                balance
+                userCount
+                owner {
+                  id
+                  annexPerBlock
+                  totalAllocPoint
+                }
+                users(orderBy: amount, orderDirection: desc) {
+                  id
+                  address
+                  amount
+                  rewardDebt
+                }
+                slpAge
+                liquidityPair @client
+                timestamp
+                entryUSD
+                exitUSD
+              }
+            }
+          `,
         variables: {
           id,
         },
@@ -166,33 +166,33 @@ async function getPools(url = null) {
       url,
       {
         query: `
-                query(
-                    $first: Int! = 1000
-                    $skip: Int! = 0
-                    $orderBy: String! = "timestamp"
-                    $orderDirection: String! = "desc"
-                    ) {
-                        pools(
-                            first: $first
-                            skip: $skip
-                            orderBy: $orderBy
-                            orderDirection: $orderDirection
-                        ) {
-                            id
-                            pair
-                            allocPoint
-                            lastRewardBlock
-                            accAnnexPerShare
-                            balance
-                            userCount
-                            owner {
-                                id
-                                annexPerBlock
-                                totalAllocPoint
-                            }
-                        }
-                    }
-            `,
+          query(
+            $first: Int! = 1000
+            $skip: Int! = 0
+            $orderBy: String! = "timestamp"
+            $orderDirection: String! = "desc"
+            ) {
+              pools(
+                first: $first
+                skip: $skip
+                orderBy: $orderBy
+                orderDirection: $orderDirection
+              ) {
+                id
+                pair
+                allocPoint
+                lastRewardBlock
+                accAnnexPerShare
+                balance
+                userCount
+                owner {
+                  id
+                  annexPerBlock
+                  totalAllocPoint
+                }
+              }
+            }
+          `,
         variables: {
           first: 1000,
           skip: 0,
@@ -211,9 +211,13 @@ async function getPools(url = null) {
   });
 }
 
+function getFarms() {
+  const FARMING_URL = 'https://api.annex.finance/api/v1/farming';
+  return $.get(FARMING_URL)
+}
+
 function getPoolsFromBSC() {
   let { MASTERCHEF_CONTRACT, ACCOUNT, NETWORK } = window.variables;
-console.log('network: ', NETWORK);
   if (!MASTERCHEF_CONTRACT) {
     const { CONTRACT_MASTERCHEF_ADDRESS } = window.values[NETWORK];
     const BSC_PROVIDER = "https://bsc-dataseed.binance.org/";

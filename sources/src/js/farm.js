@@ -117,6 +117,7 @@ function initData(callback) {
     CONTRACT_TOKEN_ADDRESS = values[56].CONTRACT_TOKEN_ADDRESS,
   } = window.variables;
   Promise.all([
+    getFarms(),
     getLiquidityPositions(),
     getPools(),
     // getToken(CONTRACT_TOKEN_ADDRESS),
@@ -124,12 +125,14 @@ function initData(callback) {
     getAnnPrice(),
   ])
     .then(function ([
+      farms,
       liquidityPositions,
       pools,
       // token,
       bundles,
       annexBundle
     ]) {
+      const calcedPairs = farms.data.pairs;
       const ethPrice = bundles.length !== 0 ? bundles[0].ethPrice : 0;
       const annexPrice = annexBundle;
       const pairAddresses = pools.map((pool) => pool.pair).sort();
@@ -148,6 +151,7 @@ function initData(callback) {
             )
             .map((pool) => {
               const pair = pairs.find((pair) => pair.id === pool.pair);
+              const calcedPair = calcedPairs.find((pair) => pair.lpAddress.toLowerCase() === pool.pair);
               const liquidityPosition = liquidityPositions.find(
                 (liquidityPosition) => liquidityPosition.pair.id === pair.id
               );
@@ -156,15 +160,6 @@ function initData(callback) {
               const balance = balances[pool.pair].balance.toString(10); // Number(pool.balance / 1e18);
               const blocksPerHour = 3600 / averageBlockTime;
 
-              // const rewardPerBlock =
-              //   100 - 100 * (pool45.allocPoint / pool45.owner.totalAllocPoint);
-
-              // const roiPerBlock =
-              //   (Number(token.derivedETH) *
-              //     rewardPerBlock *
-              //     3 *
-              //     (Number(pool.allocPoint) / Number(pool.owner.totalAllocPoint))) /
-              //   (Number(pair.reserveETH) * (balance / Number(pair.totalSupply)));
               const balanceUSD =
                 (balance / Number(pair.totalSupply)) * Number(pair.reserveUSD);
 
@@ -183,6 +178,7 @@ function initData(callback) {
               
               return {
                 ...pool,
+                calcedPair,
                 liquidityPair: pair,
                 roiPerBlock,
                 roiPerHour,
@@ -427,14 +423,14 @@ function farmTableRender() {
                   <img src="images/ann.svg" alt="ANN">
                 </div>
                 <div class="cell-yield__text">
-                  <p>${formatNumber(pair.rewardPerDay, 2)} ANN/Day</p>
-                  <div class="descr">${pair.allocPoint}x Multiplier</div>
+                  <p>${formatNumber(pair.calcedPair.rewardPerDay, 2)} ANN/Day</p>
+                  <div class="descr">${pair.calcedPair.allocPoint}x Multiplier</div>
                 </div>
               </div>
               <div class="farm-list-items-item-content__cell">
                 <div>
                   <div class="cell-apy-title">APY</div>
-                  <div class="cell-apy"><span>⬆</span> ${formatNumber(pair.roiPerYear * 100, 2)}%</div>
+                  <div class="cell-apy"><span>⬆</span> ${formatNumber(pair.calcedPair.apy, 2)}%</div>
                 </div>
               </div>
               <div class="farm-list-items-item-content__cell">
@@ -442,7 +438,7 @@ function farmTableRender() {
                   <div class="cell-apy-title">Liquidity</div>
                   <div class="cell-apy">
                     ${formatNumber(
-                      pair.liquidityPair.volume,
+                      pair.calcedPair.liquidity,
                       2,
                       "en",
                       "currency",
